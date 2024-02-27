@@ -90,9 +90,9 @@ abstract class IColumnState {
   /// If there is a [PlutoColumn.frozen.isFrozen] column in [columns],
   /// If the width constraint of the frozen column is greater than the range,
   /// the columns are unfreeze in order.
-  void insertColumns(int columnIdx, List<PlutoColumn> columns);
+  void insertColumns(int columnIdx, List<PlutoColumn> columns, {bool notify = true});
 
-  void removeColumns(List<PlutoColumn> columns);
+  void removeColumns(List<PlutoColumn> columns, {bool notify = true});
 
   /// Move [column] position to [targetColumn].
   ///
@@ -403,7 +403,7 @@ mixin ColumnState implements IPlutoGridState {
   }
 
   @override
-  void insertColumns(int columnIdx, List<PlutoColumn> columns) {
+  void insertColumns(int columnIdx, List<PlutoColumn> columns, {bool notify = true}) {
     if (columns.isEmpty) {
       return;
     }
@@ -432,11 +432,13 @@ mixin ColumnState implements IPlutoGridState {
 
     updateVisibilityLayout();
 
-    notifyListeners(true, insertColumns.hashCode);
+    if (notify) {
+      notifyListeners(true, insertColumns.hashCode);
+    }
   }
 
   @override
-  void removeColumns(List<PlutoColumn> columns) {
+  void removeColumns(List<PlutoColumn> columns, {bool notify = true}) {
     if (columns.isEmpty) {
       return;
     }
@@ -465,7 +467,9 @@ mixin ColumnState implements IPlutoGridState {
 
     resetCurrentState(notify: false);
 
-    notifyListeners(true, removeColumns.hashCode);
+    if (notify) {
+      notifyListeners(true, removeColumns.hashCode);
+    }
   }
 
   @override
@@ -577,21 +581,17 @@ mixin ColumnState implements IPlutoGridState {
     String maxValue = '';
     bool hasExpandableRowGroup = false;
     for (final row in refRows) {
-      final cell = row.cells.entries
-          .firstWhere((element) => element.key == column.field)
-          .value;
+      final cell = row.cells.entries.firstWhere((element) => element.key == column.field).value;
       var value = column.formattedValueForDisplay(cell.value);
       if (hasRowGroups) {
         if (PlutoDefaultCell.showGroupCount(rowGroupDelegate!, cell)) {
-          final groupCountValue =
-              PlutoDefaultCell.groupCountText(rowGroupDelegate!, row);
+          final groupCountValue = PlutoDefaultCell.groupCountText(rowGroupDelegate!, row);
           if (groupCountValue.isNotEmpty) {
             value = '$value $groupCountValue';
           }
         }
 
-        hasExpandableRowGroup |=
-            PlutoDefaultCell.canExpand(rowGroupDelegate!, cell);
+        hasExpandableRowGroup |= PlutoDefaultCell.canExpand(rowGroupDelegate!, cell);
       }
       if (maxValue.length < value.length) {
         maxValue = value;
@@ -600,8 +600,7 @@ mixin ColumnState implements IPlutoGridState {
 
     // Get size after rendering virtually
     // https://stackoverflow.com/questions/54351655/flutter-textfield-width-should-match-width-of-contained-text
-    final titleTextWidth =
-        _visualTextWidth(column.title, style.columnTextStyle);
+    final titleTextWidth = _visualTextWidth(column.title, style.columnTextStyle);
     final maxValueTextWidth = _visualTextWidth(maxValue, style.cellTextStyle);
 
     // todo : Handle (renderer) width
@@ -610,8 +609,7 @@ mixin ColumnState implements IPlutoGridState {
         column.width +
         [
           (column.titlePadding ?? style.defaultColumnTitlePadding).horizontal,
-          if (column.enableRowChecked)
-            _getEffectiveButtonWidth(context, checkBox: true),
+          if (column.enableRowChecked) _getEffectiveButtonWidth(context, checkBox: true),
           if (column.isShowRightIcon) style.iconSize,
           8,
         ].reduce((acc, a) => acc + a);
@@ -621,8 +619,7 @@ mixin ColumnState implements IPlutoGridState {
         [
           (column.cellPadding ?? style.defaultCellPadding).horizontal,
           if (hasExpandableRowGroup) _getEffectiveButtonWidth(context),
-          if (column.enableRowChecked)
-            _getEffectiveButtonWidth(context, checkBox: true),
+          if (column.enableRowChecked) _getEffectiveButtonWidth(context, checkBox: true),
           if (column.isShowRightIcon) style.iconSize,
           2,
         ].reduce((acc, a) => acc + a);
@@ -1047,9 +1044,8 @@ mixin ColumnState implements IPlutoGridState {
       return false;
     }
 
-    final columns = showFrozenColumn
-        ? leftFrozenColumns + bodyColumns + rightFrozenColumns
-        : refColumns;
+    final columns =
+        showFrozenColumn ? leftFrozenColumns + bodyColumns + rightFrozenColumns : refColumns;
 
     final resizeHelper = getColumnsResizeHelper(
       columns: columns,
@@ -1060,8 +1056,7 @@ mixin ColumnState implements IPlutoGridState {
     return resizeHelper.update();
   }
 
-  double _getEffectiveButtonWidth(BuildContext context,
-      {bool checkBox = false}) {
+  double _getEffectiveButtonWidth(BuildContext context, {bool checkBox = false}) {
     final theme = Theme.of(context);
     late double width;
     switch (theme.materialTapTargetSize) {
