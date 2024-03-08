@@ -193,7 +193,7 @@ class PlutoGridColumnIcon extends StatelessWidget {
 
   final Color color;
 
-  final IconData icon;
+  final IconData? icon;
 
   final Icon? ascendingIcon;
 
@@ -202,7 +202,7 @@ class PlutoGridColumnIcon extends StatelessWidget {
   const PlutoGridColumnIcon({
     this.sort,
     this.color = Colors.black26,
-    this.icon = Icons.dehaze,
+    this.icon,
     this.ascendingIcon,
     this.descendingIcon,
     super.key,
@@ -229,6 +229,7 @@ class PlutoGridColumnIcon extends StatelessWidget {
               )
             : descendingIcon!;
       default:
+      if (icon == null) return const SizedBox.shrink();
         return Icon(
           icon,
           color: color,

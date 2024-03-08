@@ -461,7 +461,7 @@ class PlutoGridStyleConfig {
 
   /// Icon that can open a pop-up menu next to the column title
   /// when [enableContextMenu] of [PlutoColumn] is true.
-  final IconData columnContextIcon;
+  final IconData? columnContextIcon;
 
   /// If enableContextMenu of PlutoColumn is false and enableDropToResize is true,
   /// only the width of the column can be adjusted.
