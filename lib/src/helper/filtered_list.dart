@@ -219,6 +219,14 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
     return result;
   }
 
+  void removeAtFromOriginal(int index) {
+    _workOnOriginalList(() {
+      super.removeAt(index);
+    });
+
+    _updateFilteredList();
+  }
+
   @override
   void removeWhere(bool Function(E element) test) {
     var list = _effectiveList;

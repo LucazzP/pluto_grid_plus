@@ -422,7 +422,12 @@ mixin RowState implements IPlutoGridState {
 
     final Set<Key> removeKeys = Set.from(rows.map((e) => e.key));
 
-    refRows.removeWhereFromOriginal((e) => removeKeys.contains(e.key));
+    final oldIndex = refRows.originalList.indexOf(rows.first);
+    if (rows.length > 1) {
+      refRows.removeWhereFromOriginal((e) => removeKeys.contains(e.key));
+    } else {
+      refRows.removeAtFromOriginal(oldIndex);
+    }
 
     refRows.insertAll(indexToMove, rows);
 
@@ -438,6 +443,7 @@ mixin RowState implements IPlutoGridState {
       onRowsMoved!(PlutoGridOnRowsMovedEvent(
         idx: indexToMove,
         rows: rows,
+        oldIdx: oldIndex,
       ));
     }
 

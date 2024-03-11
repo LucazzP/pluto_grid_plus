@@ -176,10 +176,12 @@ class PlutoGridOnRowSecondaryTapEvent {
 class PlutoGridOnRowsMovedEvent {
   final int idx;
   final List<PlutoRow> rows;
+  final int oldIdx;
 
   const PlutoGridOnRowsMovedEvent({
     required this.idx,
     required this.rows,
+    required this.oldIdx,
   });
 }
 
