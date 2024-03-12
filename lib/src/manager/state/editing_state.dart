@@ -62,12 +62,10 @@ mixin EditingState implements IPlutoGridState {
   bool get isEditing => _state._isEditing;
 
   @override
-  bool get autoEditing =>
-      _state._autoEditing || currentColumn?.enableAutoEditing == true;
+  bool get autoEditing => _state._autoEditing || currentColumn?.enableAutoEditing == true;
 
   @override
-  TextEditingController? get textEditingController =>
-      _state._textEditingController;
+  TextEditingController? get textEditingController => _state._textEditingController;
 
   @override
   bool isEditableCell(PlutoCell cell) {
@@ -108,6 +106,15 @@ mixin EditingState implements IPlutoGridState {
       if (!isEditableCell(currentCell!)) {
         flag = false;
       }
+    }
+
+    if (currentCell!.column.onCellDoubleTap != null) {
+      currentCell!.column.onCellDoubleTap!(PlutoGridOnRowDoubleTapEvent(
+        row: currentCell!.row,
+        rowIdx: currentCellPosition!.rowIdx!,
+        cell: currentCell!,
+      ));
+      return;
     }
 
     _state._isEditing = flag;
@@ -163,25 +170,20 @@ mixin EditingState implements IPlutoGridState {
         // No cell selection : Paste in order based on the current cell
         columnStartIdx = currentCellPosition!.columnIdx;
 
-        columnEndIdx =
-            currentCellPosition!.columnIdx! + textList.first.length - 1;
+        columnEndIdx = currentCellPosition!.columnIdx! + textList.first.length - 1;
 
         rowStartIdx = currentCellPosition!.rowIdx;
 
         rowEndIdx = currentCellPosition!.rowIdx! + textList.length - 1;
       } else {
         // If there are selected cells : Paste in order from selected cell range
-        columnStartIdx = min(currentCellPosition!.columnIdx!,
-            currentSelectingPosition!.columnIdx!);
+        columnStartIdx = min(currentCellPosition!.columnIdx!, currentSelectingPosition!.columnIdx!);
 
-        columnEndIdx = max(currentCellPosition!.columnIdx!,
-            currentSelectingPosition!.columnIdx!);
+        columnEndIdx = max(currentCellPosition!.columnIdx!, currentSelectingPosition!.columnIdx!);
 
-        rowStartIdx = min(
-            currentCellPosition!.rowIdx!, currentSelectingPosition!.rowIdx!);
+        rowStartIdx = min(currentCellPosition!.rowIdx!, currentSelectingPosition!.rowIdx!);
 
-        rowEndIdx = max(
-            currentCellPosition!.rowIdx!, currentSelectingPosition!.rowIdx!);
+        rowEndIdx = max(currentCellPosition!.rowIdx!, currentSelectingPosition!.rowIdx!);
       }
 
       _pasteCellValueInOrder(
@@ -259,8 +261,7 @@ mixin EditingState implements IPlutoGridState {
 
     int columnEndIdx = refColumns.length - 1;
 
-    final Set<Key> selectingRowKeys =
-        Set.from(currentSelectingRows.map((e) => e.key));
+    final Set<Key> selectingRowKeys = Set.from(currentSelectingRows.map((e) => e.key));
 
     List<int> rowIdxList = [];
 
@@ -308,9 +309,7 @@ mixin EditingState implements IPlutoGridState {
         textRowIdx = 0;
       }
 
-      for (int columnIdx = columnStartIdx!;
-          columnIdx <= columnEndIdx!;
-          columnIdx += 1) {
+      for (int columnIdx = columnStartIdx!; columnIdx <= columnEndIdx!; columnIdx += 1) {
         if (columnIdx > columnIndexes.length - 1) {
           break;
         }

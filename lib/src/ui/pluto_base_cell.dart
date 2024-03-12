@@ -82,10 +82,6 @@ class PlutoBaseCell extends StatelessWidget implements PlutoVisibilityLayoutChil
   }
 
   void _handleOnDoubleTap() {
-    if (column.onCellDoubleTap != null) {
-      column.onCellDoubleTap!(PlutoGridOnRowDoubleTapEvent(row: row, rowIdx: rowIdx, cell: cell));
-      return;
-    }
     _addGestureEvent(PlutoGridGestureType.onDoubleTap, Offset.zero);
   }
 
@@ -97,9 +93,7 @@ class PlutoBaseCell extends StatelessWidget implements PlutoVisibilityLayoutChil
   }
 
   void Function()? _onDoubleTapOrNull() {
-    return stateManager.onRowDoubleTap == null && column.onCellDoubleTap == null
-        ? null
-        : _handleOnDoubleTap;
+    return stateManager.onRowDoubleTap == null ? null : _handleOnDoubleTap;
   }
 
   void Function(TapDownDetails details)? _onSecondaryTapOrNull() {
