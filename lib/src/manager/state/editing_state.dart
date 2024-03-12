@@ -108,15 +108,12 @@ mixin EditingState implements IPlutoGridState {
       }
     }
 
-    if (currentCell!.column.onCellDoubleTap != null &&
-        currentSelectingPosition?.rowIdx == currentCellPosition!.rowIdx &&
-        currentCellPosition?.columnIdx == currentSelectingPosition!.columnIdx) {
+    if (currentCell!.column.onCellDoubleTap != null) {
       currentCell!.column.onCellDoubleTap!(PlutoGridOnRowDoubleTapEvent(
         row: currentCell!.row,
         rowIdx: currentCellPosition!.rowIdx!,
         cell: currentCell!,
       ));
-      return;
     }
 
     _state._isEditing = flag;
