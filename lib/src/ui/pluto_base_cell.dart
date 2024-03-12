@@ -3,8 +3,7 @@ import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 
 import 'ui.dart';
 
-class PlutoBaseCell extends StatelessWidget
-    implements PlutoVisibilityLayoutChild {
+class PlutoBaseCell extends StatelessWidget implements PlutoVisibilityLayoutChild {
   final PlutoCell cell;
 
   final PlutoColumn column;
@@ -83,6 +82,10 @@ class PlutoBaseCell extends StatelessWidget
   }
 
   void _handleOnDoubleTap() {
+    if (column.onCellDoubleTap != null) {
+      column.onCellDoubleTap!(PlutoGridOnRowDoubleTapEvent(row: row, rowIdx: rowIdx, cell: cell));
+      return;
+    }
     _addGestureEvent(PlutoGridGestureType.onDoubleTap, Offset.zero);
   }
 
@@ -94,13 +97,13 @@ class PlutoBaseCell extends StatelessWidget
   }
 
   void Function()? _onDoubleTapOrNull() {
-    return stateManager.onRowDoubleTap == null ? null : _handleOnDoubleTap;
+    return stateManager.onRowDoubleTap == null && column.onCellDoubleTap == null
+        ? null
+        : _handleOnDoubleTap;
   }
 
   void Function(TapDownDetails details)? _onSecondaryTapOrNull() {
-    return stateManager.onRowSecondaryTap == null
-        ? null
-        : _handleOnSecondaryTap;
+    return stateManager.onRowSecondaryTap == null ? null : _handleOnSecondaryTap;
   }
 
   @override
@@ -120,8 +123,7 @@ class PlutoBaseCell extends StatelessWidget
         rowIdx: rowIdx,
         row: row,
         column: column,
-        cellPadding: column.cellPadding ??
-            stateManager.configuration.style.defaultCellPadding,
+        cellPadding: column.cellPadding ?? stateManager.configuration.style.defaultCellPadding,
         stateManager: stateManager,
         child: _Cell(
           stateManager: stateManager,
