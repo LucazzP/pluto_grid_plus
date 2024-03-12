@@ -108,7 +108,9 @@ mixin EditingState implements IPlutoGridState {
       }
     }
 
-    if (currentCell!.column.onCellDoubleTap != null) {
+    if (currentCell!.column.onCellDoubleTap != null &&
+        currentSelectingPosition?.rowIdx == currentCellPosition!.rowIdx &&
+        currentCellPosition?.columnIdx == currentSelectingPosition!.columnIdx) {
       currentCell!.column.onCellDoubleTap!(PlutoGridOnRowDoubleTapEvent(
         row: currentCell!.row,
         rowIdx: currentCellPosition!.rowIdx!,
