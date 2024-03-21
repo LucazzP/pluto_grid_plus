@@ -31,9 +31,7 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
   PlutoColumnSort _sort = PlutoColumnSort.none;
 
   bool get showContextIcon {
-    return widget.column.enableContextMenu ||
-        widget.column.enableDropToResize ||
-        !_sort.isNone;
+    return widget.column.enableContextMenu || widget.column.enableDropToResize || !_sort.isNone;
   }
 
   bool get enableGesture {
@@ -98,8 +96,7 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
 
   void _handleOnPointMove(PointerMoveEvent event) {
     // if at least one movement event has distanceSquared > 0.5 _isPointMoving will be true
-    _isPointMoving |=
-        (_columnRightPosition - event.position).distanceSquared > 0.5;
+    _isPointMoving |= (_columnRightPosition - event.position).distanceSquared > 0.5;
 
     if (!_isPointMoving) return;
 
@@ -129,6 +126,11 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
     final columnWidget = _SortableWidget(
       stateManager: stateManager,
       column: widget.column,
+      onSecondaryTap: (position) {
+        if (widget.column.enableContextMenu) {
+          _showContextMenu(context, position);
+        }
+      },
       child: _ColumnWidget(
         stateManager: stateManager,
         column: widget.column,
@@ -144,9 +146,8 @@ class PlutoColumnTitleState extends PlutoStateWithChange<PlutoColumnTitle> {
           icon: PlutoGridColumnIcon(
             sort: _sort,
             color: style.iconColor,
-            icon: widget.column.enableContextMenu
-                ? style.columnContextIcon
-                : style.columnResizeIcon,
+            icon:
+                widget.column.enableContextMenu ? style.columnContextIcon : style.columnResizeIcon,
             ascendingIcon: style.columnAscendingIcon,
             descendingIcon: style.columnDescendingIcon,
           ),
@@ -229,7 +230,7 @@ class PlutoGridColumnIcon extends StatelessWidget {
               )
             : descendingIcon!;
       default:
-      if (icon == null) return const SizedBox.shrink();
+        if (icon == null) return const SizedBox.shrink();
         return Icon(
           icon,
           color: color,
@@ -279,8 +280,7 @@ class _DraggableWidget extends StatelessWidget {
             alignment: column.titleTextAlign.alignmentValue,
             width: PlutoGridSettings.minColumnWidth,
             height: stateManager.columnHeight,
-            backgroundColor:
-                stateManager.configuration.style.gridBackgroundColor,
+            backgroundColor: stateManager.configuration.style.gridBackgroundColor,
             borderColor: stateManager.configuration.style.gridBorderColor,
             child: Text(
               column.title,
@@ -305,11 +305,13 @@ class _SortableWidget extends StatelessWidget {
   final PlutoColumn column;
 
   final Widget child;
+  final void Function(Offset position) onSecondaryTap;
 
   const _SortableWidget({
     required this.stateManager,
     required this.column,
     required this.child,
+    required this.onSecondaryTap,
   });
 
   void _onTap() {
@@ -324,6 +326,10 @@ class _SortableWidget extends StatelessWidget {
             child: GestureDetector(
               key: const ValueKey('ColumnTitleSortableGesture'),
               onTap: _onTap,
+              onSecondaryTap: () => onSecondaryTap(
+                  (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero)),
+              onLongPress: () => onSecondaryTap(
+                  (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero)),
               child: child,
             ),
           )
@@ -345,12 +351,10 @@ class _ColumnWidget extends StatelessWidget {
   });
 
   EdgeInsets get padding =>
-      column.titlePadding ??
-      stateManager.configuration.style.defaultColumnTitlePadding;
+      column.titlePadding ?? stateManager.configuration.style.defaultColumnTitlePadding;
 
   bool get showSizedBoxForIcon =>
-      column.isShowRightIcon &&
-      (column.titleTextAlign.isRight || stateManager.isRTL);
+      column.isShowRightIcon && (column.titleTextAlign.isRight || stateManager.isRTL);
 
   @override
   Widget build(BuildContext context) {
@@ -378,9 +382,7 @@ class _ColumnWidget extends StatelessWidget {
           height: height,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: noDragTarget
-                  ? column.backgroundColor
-                  : style.dragTargetColumnColor,
+              color: noDragTarget ? column.backgroundColor : style.dragTargetColumnColor,
               border: BorderDirectional(
                 end: style.enableColumnBorderVertical
                     ? BorderSide(color: style.borderColor, width: 1.0)
@@ -420,12 +422,10 @@ class CheckboxAllSelectionWidget extends PlutoStatefulWidget {
   const CheckboxAllSelectionWidget({required this.stateManager, super.key});
 
   @override
-  CheckboxAllSelectionWidgetState createState() =>
-      CheckboxAllSelectionWidgetState();
+  CheckboxAllSelectionWidgetState createState() => CheckboxAllSelectionWidgetState();
 }
 
-class CheckboxAllSelectionWidgetState
-    extends PlutoStateWithChange<CheckboxAllSelectionWidget> {
+class CheckboxAllSelectionWidgetState extends PlutoStateWithChange<CheckboxAllSelectionWidget> {
   bool? _checked;
 
   @override
@@ -527,8 +527,7 @@ class _ColumnTextWidgetState extends PlutoStateWithChange<_ColumnTextWidget> {
     );
   }
 
-  String? get _title =>
-      widget.column.titleSpan == null ? widget.column.title : null;
+  String? get _title => widget.column.titleSpan == null ? widget.column.title : null;
 
   List<InlineSpan> get _children => [
         if (widget.column.titleSpan != null) widget.column.titleSpan!,
@@ -543,8 +542,7 @@ class _ColumnTextWidgetState extends PlutoStateWithChange<_ColumnTextWidget> {
               ),
               onPressed: _handleOnPressedFilter,
               constraints: BoxConstraints(
-                maxHeight:
-                    widget.height + (PlutoGridSettings.rowBorderWidth * 2),
+                maxHeight: widget.height + (PlutoGridSettings.rowBorderWidth * 2),
               ),
             ),
           ),
