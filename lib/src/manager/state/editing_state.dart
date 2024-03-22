@@ -84,6 +84,7 @@ mixin EditingState implements IPlutoGridState {
   void setEditing(
     bool flag, {
     bool notify = true,
+    bool callOnCellDoubleTap = false,
   }) {
     if (!mode.isEditableMode || (flag && currentCell == null)) {
       flag = false;
@@ -108,14 +109,13 @@ mixin EditingState implements IPlutoGridState {
       }
     }
 
-    if (currentCell!.column.onCellDoubleTap != null) {
+    if (currentCell!.column.onCellDoubleTap != null && callOnCellDoubleTap) {
       currentCell!.column.onCellDoubleTap!(PlutoGridOnRowDoubleTapEvent(
         row: currentCell!.row,
         rowIdx: currentCellPosition!.rowIdx!,
         cell: currentCell!,
       ));
     }
-
     _state._isEditing = flag;
 
     clearCurrentSelecting(notify: false);
