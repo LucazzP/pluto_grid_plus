@@ -102,6 +102,7 @@ class PlutoBodyRowsState extends PlutoStateWithChange<PlutoBodyRows> {
             physics: const ClampingScrollPhysics(),
             itemCount: _rows.length,
             itemExtent: stateManager.rowTotalHeight,
+            key: stateManager.bodyRowsListViewKey,
             addRepaintBoundaries: false,
             itemBuilder: (ctx, i) {
               return PlutoBaseRow(

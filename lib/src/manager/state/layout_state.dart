@@ -162,6 +162,8 @@ mixin LayoutState implements IPlutoGridState {
 
   final ChangeNotifier _resizingChangeNotifier = ChangeNotifier();
 
+  final bodyRowsListViewKey = const Key('PlutoGrid_body_rows_list_view');
+
   @override
   double? get maxWidth => _state._maxWidth;
 
