@@ -646,14 +646,15 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
                   ),
                   LayoutId(
                       id: _StackName.leftFrozenRows, child: PlutoLeftFrozenRows(_stateManager)),
-                  LayoutId(
-                    id: _StackName.leftFrozenDivider,
-                    child: PlutoShadowLine(
-                      axis: Axis.vertical,
-                      color: style.gridBorderColor,
-                      shadow: style.enableGridBorderShadow,
+                  if (style.enableFrozenDivider)
+                    LayoutId(
+                      id: _StackName.leftFrozenDivider,
+                      child: PlutoShadowLine(
+                        axis: Axis.vertical,
+                        color: style.gridBorderColor,
+                        shadow: style.enableGridBorderShadow,
+                      ),
                     ),
-                  ),
                   if (showColumnFooter)
                     LayoutId(
                       id: _StackName.leftFrozenColumnFooters,
@@ -669,15 +670,16 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
                   ),
                   LayoutId(
                       id: _StackName.rightFrozenRows, child: PlutoRightFrozenRows(_stateManager)),
-                  LayoutId(
-                    id: _StackName.rightFrozenDivider,
-                    child: PlutoShadowLine(
-                      axis: Axis.vertical,
-                      color: style.gridBorderColor,
-                      shadow: style.enableGridBorderShadow,
-                      reverse: true,
+                  if (style.enableFrozenDivider)
+                    LayoutId(
+                      id: _StackName.rightFrozenDivider,
+                      child: PlutoShadowLine(
+                        axis: Axis.vertical,
+                        color: style.gridBorderColor,
+                        shadow: style.enableGridBorderShadow,
+                        reverse: true,
+                      ),
                     ),
-                  ),
                   if (showColumnFooter)
                     LayoutId(
                       id: _StackName.rightFrozenColumnFooters,
