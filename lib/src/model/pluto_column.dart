@@ -141,7 +141,7 @@ class PlutoColumn {
   bool enableColumnDrag;
 
   /// Change the position of the row by dragging the icon in the cell.
-  late final bool Function(PlutoRow row) enableRowDrag;
+  late final bool Function(PlutoRow row, int rowIdx) enableRowDrag;
 
   /// A checkbox appears in the cell of the column.
   bool enableRowChecked;
@@ -227,7 +227,7 @@ class PlutoColumn {
     this.footerRenderer,
     this.suppressedAutoSize = false,
     this.enableColumnDrag = true,
-    bool Function(PlutoRow row)? enableRowDrag,
+    bool Function(PlutoRow row, int rowIdx)? enableRowDrag,
     this.enableRowChecked = false,
     this.enableSorting = true,
     this.enableContextMenu = true,
@@ -245,7 +245,7 @@ class PlutoColumn {
     this.onCellDoubleTap,
   })  : _key = UniqueKey(),
         _checkReadOnly = checkReadOnly {
-    this.enableRowDrag = enableRowDrag ?? (_) => false;
+    this.enableRowDrag = enableRowDrag ?? (_, __) => false;
   }
 
   final Key _key;
