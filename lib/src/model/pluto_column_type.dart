@@ -465,7 +465,7 @@ class PlutoColumnTypeDate
     DateTime? dateFormatValue;
 
     try {
-      dateFormatValue = dateFormat.parse(v.toString());
+      dateFormatValue = v is DateTime ? v : dateFormat.parse(v.toString());
     } catch (e) {
       dateFormatValue = null;
     }
