@@ -355,8 +355,7 @@ class PlutoColumnTypeCurrency
   late final int decimalPoint;
 }
 
-class PlutoColumnTypeSelect
-    implements PlutoColumnType, PlutoColumnTypeHasPopupIcon {
+class PlutoColumnTypeSelect implements PlutoColumnType, PlutoColumnTypeHasPopupIcon {
   @override
   final dynamic defaultValue;
 
@@ -475,18 +474,22 @@ class PlutoColumnTypeDate
 
   @override
   String applyFormat(dynamic value) {
-    final parseValue = DateTime.tryParse(value.toString());
+    if (value is DateTime) return dateFormat.format(value);
+    final parsedDate = DateTime.tryParse(value.toString());
 
-    if (parseValue == null) {
-      return '';
+    if (parsedDate == null) {
+      try {
+        dateFormat.parse(value.toString());
+      } on FormatException catch (_) {
+        return '';
+      }
     }
 
-    return dateFormat.format(DateTime.parse(value.toString()));
+    return dateFormat.format(dateFormat.parse(value.toString()));
   }
 }
 
-class PlutoColumnTypeTime
-    implements PlutoColumnType, PlutoColumnTypeHasPopupIcon {
+class PlutoColumnTypeTime implements PlutoColumnType, PlutoColumnTypeHasPopupIcon {
   @override
   final dynamic defaultValue;
 
