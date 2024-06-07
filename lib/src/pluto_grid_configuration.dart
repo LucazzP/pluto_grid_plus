@@ -197,6 +197,7 @@ class PlutoGridStyleConfig {
     this.enableGridBorders = true,
     this.enableRowColorAnimation = false,
     this.enableFrozenDivider = true,
+    this.enableRowHoverColor = false,
     this.gridBackgroundColor = Colors.white,
     this.rowColor = Colors.white,
     this.oddRowColor,
@@ -205,6 +206,7 @@ class PlutoGridStyleConfig {
     Color? columnCheckedColor,
     Color? cellCheckedColor,
     this.rowCheckedColor = const Color(0x11757575),
+    this.rowHoveredColor = const Color(0xFFB1B3B7),
     this.cellColorInEditState = Colors.white,
     this.cellColorInReadOnlyState = const Color(0xFFDBDBDC),
     this.cellColorGroupedRow,
@@ -250,6 +252,8 @@ class PlutoGridStyleConfig {
     this.rowGroupEmptyIcon = Icons.noise_control_off,
     this.gridBorderRadius = BorderRadius.zero,
     this.gridPopupBorderRadius = BorderRadius.zero,
+    this.gridPadding = PlutoGridSettings.gridPadding,
+    this.gridBorderWidth = PlutoGridSettings.gridBorderWidth,
     this.filterHeaderColor,
     this.filterHeaderIconColor,
   })  : columnCheckedColor = (columnCheckedColor ?? activatedColor),
@@ -268,6 +272,7 @@ class PlutoGridStyleConfig {
     this.enableGridBorders = true,
     this.enableRowColorAnimation = false,
     this.enableFrozenDivider = true,
+    this.enableRowHoverColor = false,
     this.gridBackgroundColor = const Color(0xFF111111),
     this.rowColor = const Color(0xFF111111),
     this.oddRowColor,
@@ -276,6 +281,7 @@ class PlutoGridStyleConfig {
     Color? columnCheckedColor,
     Color? cellCheckedColor,
     this.rowCheckedColor = const Color(0x11202020),
+    this.rowHoveredColor = const Color(0xFF3D3D3D),
     this.cellColorInEditState = const Color(0xFF666666),
     this.cellColorInReadOnlyState = const Color(0xFF222222),
     this.cellColorGroupedRow,
@@ -321,6 +327,8 @@ class PlutoGridStyleConfig {
     this.rowGroupEmptyIcon = Icons.noise_control_off,
     this.gridBorderRadius = BorderRadius.zero,
     this.gridPopupBorderRadius = BorderRadius.zero,
+    this.gridPadding = PlutoGridSettings.gridPadding,
+    this.gridBorderWidth = PlutoGridSettings.gridBorderWidth,
     this.filterHeaderColor,
     this.filterHeaderIconColor,
   })  : columnCheckedColor = (columnCheckedColor ?? activatedColor),
@@ -352,6 +360,13 @@ class PlutoGridStyleConfig {
   final bool enableRowColorAnimation;
 
   final bool enableFrozenDivider;
+  /// Hover effect on rows.
+  /// If true, the background color of the row changes to [rowHoveredColor]
+  /// when the mouse hovers over it.
+  /// If false, the background color of the row does not change and
+  /// the background color of the row is the same as [rowColor].
+  /// [rowHoveredColor] is therefore not used.
+  final bool enableRowHoverColor;
 
   final Color gridBackgroundColor;
 
@@ -383,6 +398,9 @@ class PlutoGridStyleConfig {
 
   /// Checked Color for the row. (Checked rows)
   final Color rowCheckedColor;
+
+  /// Hovered Color. (Currently hovered row)
+  final Color rowHoveredColor;
 
   /// Cell color in edit state. (only current cell)
   final Color cellColorInEditState;
@@ -497,6 +515,12 @@ class PlutoGridStyleConfig {
   /// Apply border radius to popup opened inside [PlutoGrid].
   final BorderRadiusGeometry gridPopupBorderRadius;
 
+  /// Defaults to [PlutoGridSettings.gridPadding]
+  final double gridPadding;
+
+  /// Defaults to [PlutoGridSettings.gridBorderWidth]
+  final double gridBorderWidth;
+
   /// Set color of filter popup header
   final Color? filterHeaderColor;
 
@@ -551,6 +575,8 @@ class PlutoGridStyleConfig {
     IconData? rowGroupEmptyIcon,
     BorderRadiusGeometry? gridBorderRadius,
     BorderRadiusGeometry? gridPopupBorderRadius,
+    double? gridPadding,
+    double? gridBorderWidth,
   }) {
     return PlutoGridStyleConfig(
         enableGridBorderShadow: enableGridBorderShadow ?? this.enableGridBorderShadow,
@@ -603,7 +629,10 @@ class PlutoGridStyleConfig {
         rowGroupCollapsedIcon: rowGroupCollapsedIcon ?? this.rowGroupCollapsedIcon,
         rowGroupEmptyIcon: rowGroupEmptyIcon ?? this.rowGroupEmptyIcon,
         gridBorderRadius: gridBorderRadius ?? this.gridBorderRadius,
-        gridPopupBorderRadius: gridPopupBorderRadius ?? this.gridPopupBorderRadius,
+        gridPopupBorderRadius:
+            gridPopupBorderRadius ?? this.gridPopupBorderRadius,
+        gridPadding: gridPadding ?? this.gridPadding,
+        gridBorderWidth: gridBorderWidth ?? this.gridBorderWidth,
         filterHeaderColor: filterHeaderColor ?? filterHeaderColor,
         filterHeaderIconColor: filterHeaderIconColor ?? filterHeaderIconColor);
   }
@@ -659,7 +688,9 @@ class PlutoGridStyleConfig {
             rowGroupCollapsedIcon == other.rowGroupCollapsedIcon &&
             rowGroupEmptyIcon == other.rowGroupEmptyIcon &&
             gridBorderRadius == other.gridBorderRadius &&
-            gridPopupBorderRadius == other.gridPopupBorderRadius;
+            gridPopupBorderRadius == other.gridPopupBorderRadius &&
+            gridPadding == other.gridPadding &&
+            gridBorderWidth == other.gridBorderWidth;
   }
 
   @override
@@ -711,6 +742,8 @@ class PlutoGridStyleConfig {
         rowGroupEmptyIcon,
         gridBorderRadius,
         gridPopupBorderRadius,
+        gridPadding,
+        gridBorderWidth,
       ]);
 }
 
