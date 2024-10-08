@@ -177,7 +177,7 @@ void main() {
       title: 'column title',
       field: 'column_field_name',
       type: PlutoColumnType.text(),
-      enableRowDrag: true,
+      enableRowDrag: (_, __) => true,
     );
 
     final PlutoCell cell = PlutoCell(value: 'default cell value');

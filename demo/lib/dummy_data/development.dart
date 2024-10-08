@@ -21,6 +21,11 @@ class DummyData {
       return PlutoColumn(
         title: faker.food.cuisine(),
         field: i.toString(),
+        onCellDoubleTap: i.isEven
+            ? (event) {
+                print(event.cell.value);
+              }
+            : null,
         readOnly: [1, 3, 5].contains(i),
         type: (int i) {
           if (i == 0) {
@@ -104,8 +109,7 @@ class DummyData {
           .toString();
     } else if (column.type.isTime) {
       final hour = faker.randomGenerator.integer(12).toString().padLeft(2, '0');
-      final minute =
-          faker.randomGenerator.integer(60).toString().padLeft(2, '0');
+      final minute = faker.randomGenerator.integer(60).toString().padLeft(2, '0');
       return '$hour:$minute';
     } else {
       return faker.randomGenerator.element(multilingualWords);
@@ -182,8 +186,7 @@ class DummyData {
         next = childrenStack.isEmpty;
 
         if (currentChildren != null) {
-          for (final _
-              in List.generate(countOfChildren[currentDepth], (i) => i)) {
+          for (final _ in List.generate(countOfChildren[currentDepth], (i) => i)) {
             final children = <PlutoRow>[];
             currentChildren.add(PlutoRow(
               cells: _cellsByColumn(columns),
@@ -233,9 +236,7 @@ class DummyData {
             );
           });
 
-      type = depthOrRandom == 0
-          ? null
-          : generateType(depthOrRandom, countOfChildren);
+      type = depthOrRandom == 0 ? null : generateType(depthOrRandom, countOfChildren);
 
       rows.add(
         PlutoRow(

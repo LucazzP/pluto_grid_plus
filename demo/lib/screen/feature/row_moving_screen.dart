@@ -30,7 +30,7 @@ class _RowMovingScreenState extends State<RowMovingScreen> {
         title: 'column1',
         field: 'column1',
         type: PlutoColumnType.text(),
-        enableRowDrag: true,
+        enableRowDrag: (_, __) => true,
       ),
       PlutoColumn(
         title: 'column2',

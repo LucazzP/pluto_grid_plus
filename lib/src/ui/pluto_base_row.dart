@@ -26,10 +26,9 @@ class PlutoBaseRow extends StatelessWidget {
   });
 
   bool _checkSameDragRows(DragTargetDetails<PlutoRow> draggingRow) {
-    final List<PlutoRow> selectedRows =
-        stateManager.currentSelectingRows.isNotEmpty
-            ? stateManager.currentSelectingRows
-            : [draggingRow.data];
+    final List<PlutoRow> selectedRows = stateManager.currentSelectingRows.isNotEmpty
+        ? stateManager.currentSelectingRows
+        : [draggingRow.data];
 
     final end = rowIdx + selectedRows.length;
 
@@ -130,16 +129,20 @@ class PlutoBaseRow extends StatelessWidget {
     final isTarget = columns.any((element) => element.enableRowDrag(row, rowIdx));
     if (isTarget) {
       return MouseRegion(
+        onEnter: (event) => _handleOnEnter(),
+        onExit: (event) => _handleOnExit(),
+        child: DragTarget<PlutoRow>(
+          onWillAcceptWithDetails: _handleOnWillAccept,
+          onAcceptWithDetails: _handleOnAccept,
+          builder: _dragTargetBuilder,
+        ),
+      );
+    }
+    return MouseRegion(
       onEnter: (event) => _handleOnEnter(),
       onExit: (event) => _handleOnExit(),
-      child: DragTarget<PlutoRow>(
-        onWillAcceptWithDetails: _handleOnWillAccept,
-        onAcceptWithDetails: _handleOnAccept,
-        builder: _dragTargetBuilder,
-      ),
+      child: _dragTargetBuilder(context, [], [], isTarget: false),
     );
-    }
-    return _dragTargetBuilder(context, [], [], isTarget: false);
   }
 }
 
@@ -299,8 +302,7 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
         // If the row is checked, the hover color is not applied.
         // If the row is hovered and hover color is enabled,
         // the configuration hover color is used.
-        bool enableRowHoverColor =
-            stateManager.configuration.style.enableRowHoverColor;
+        bool enableRowHoverColor = stateManager.configuration.style.enableRowHoverColor;
         if (isHovered && enableRowHoverColor) {
           color = stateManager.configuration.style.rowHoveredColor;
         }
@@ -308,8 +310,7 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
     }
 
     return isCheckedRow
-        ? Color.alphaBlend(
-            stateManager.configuration.style.rowCheckedColor, color)
+        ? Color.alphaBlend(stateManager.configuration.style.rowCheckedColor, color)
         : color;
   }
 

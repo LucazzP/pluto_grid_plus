@@ -437,7 +437,7 @@ void main() {
     final columns = ColumnHelper.textColumn('title', count: 10);
     final rows = RowHelper.count(10, columns);
 
-    columns[0].enableRowDrag = true;
+    columns[0].enableRowDrag = (_, __) => true;
 
     PlutoGridOnRowsMovedEvent? event;
 

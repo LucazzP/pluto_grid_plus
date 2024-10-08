@@ -9,7 +9,7 @@ void main() {
 
   final columns = ColumnHelper.textColumn('column', count: 1, start: 1);
 
-  columns.first.enableRowDrag = true;
+  columns.first.enableRowDrag = (_, __) => true;
 
   grid
       .buildSelectedRows(

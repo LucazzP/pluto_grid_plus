@@ -30,7 +30,7 @@ class _RowWithCheckboxScreenState extends State<RowWithCheckboxScreen> {
         title: 'column1',
         field: 'column1',
         type: PlutoColumnType.text(),
-        enableRowDrag: true,
+        enableRowDrag: (_, __) => true,
         enableRowChecked: true,
       ),
       PlutoColumn(

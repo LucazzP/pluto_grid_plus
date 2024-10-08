@@ -188,7 +188,7 @@ class _DevelopmentScreenState extends State<DevelopmentScreen> {
           },
         );
       };
-      columns[3].enableRowDrag = true;
+      columns[3].enableRowDrag = (_, __) => true;
       columns[3].enableRowChecked = true;
       columns[3].frozen = PlutoColumnFrozen.start;
       columns[4].frozen = PlutoColumnFrozen.start;
@@ -961,7 +961,7 @@ final testColumnsA = [
     title: 'column1',
     field: 'column1',
     type: PlutoColumnType.text(),
-    enableRowDrag: true,
+    enableRowDrag: (_, __) => true,
     enableRowChecked: true,
     enableContextMenu: false,
     enableDropToResize: true,
