@@ -38,6 +38,12 @@ typedef CreateFooterCallBack = Widget Function(PlutoGridStateManager stateManage
 
 typedef PlutoRowColorCallback = Color Function(PlutoRowColorContext rowColorContext);
 
+typedef PlutoSelectDateCallBack = Future<DateTime?> Function(
+    PlutoCell dateCell, PlutoColumn column);
+
+typedef PlutoOnActiveCellChangedEventCallback = void Function(
+  PlutoGridOnActiveCellChangedEvent event);
+
 /// [PlutoGrid] is a widget that receives columns and rows and is expressed as a grid-type UI.
 ///
 /// [PlutoGrid] supports movement and editing with the keyboard,
@@ -51,6 +57,8 @@ class PlutoGrid extends PlutoStatefulWidget {
     super.key,
     required this.columns,
     required this.rows,
+    this.rowWrapper,
+    this.editCellWrapper,
     this.columnGroups,
     this.onLoaded,
     this.onChanged,
@@ -62,16 +70,23 @@ class PlutoGrid extends PlutoStatefulWidget {
     this.onRowEnter,
     this.onRowExit,
     this.onRowsMoved,
+    this.onActiveCellChanged,
     this.onColumnsMoved,
     this.createHeader,
     this.createFooter,
     this.noRowsWidget,
     this.rowColorCallback,
+    this.selectDateCallback,
     this.columnMenuDelegate,
     this.configuration = const PlutoGridConfiguration(),
     this.notifierFilterResolver,
     this.mode = PlutoGridMode.normal,
   });
+
+  final Widget Function(Widget rowWidget)? rowWrapper;
+
+  final Widget Function(Widget editCellWidget, PlutoCell cell,
+      TextEditingController controller)? editCellWrapper;
 
   /// {@template pluto_grid_property_columns}
   /// The [PlutoColumn] column is delivered as a list and can be added or deleted after grid creation.
@@ -197,6 +212,12 @@ class PlutoGrid extends PlutoStatefulWidget {
   /// {@endtemplate}
   final PlutoOnRowsMovedEventCallback? onRowsMoved;
 
+  /// {@template pluto_grid_property_onActiveCellChanged}
+  /// Callback for receiving events
+  /// when the active cell is changed
+  /// {@endtemplate}
+  final PlutoOnActiveCellChangedEventCallback? onActiveCellChanged;
+
   /// {@template pluto_grid_property_onColumnsMoved}
   /// Callback for receiving events
   /// when the column is moved by dragging the column
@@ -295,6 +316,8 @@ class PlutoGrid extends PlutoStatefulWidget {
   /// ```
   /// {@endtemplate}
   final PlutoRowColorCallback? rowColorCallback;
+
+  final PlutoSelectDateCallBack? selectDateCallback;
 
   /// {@template pluto_grid_property_columnMenuDelegate}
   /// Column menu can be customized.
@@ -503,6 +526,8 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
     _stateManager = PlutoGridStateManager(
       columns: widget.columns,
       rows: widget.rows,
+      rowWrapper: widget.rowWrapper,
+      editCellWrapper: widget.editCellWrapper,
       gridFocusNode: _gridFocusNode,
       scroll: PlutoGridScrollController(
         vertical: _verticalScroll,
@@ -518,8 +543,10 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
       onRowEnter: widget.onRowEnter,
       onRowExit: widget.onRowExit,
       onRowsMoved: widget.onRowsMoved,
+      onActiveCellChanged: widget.onActiveCellChanged,
       onColumnsMoved: widget.onColumnsMoved,
       rowColorCallback: widget.rowColorCallback,
+      selectDateCallback: widget.selectDateCallback,
       createHeader: widget.createHeader,
       createFooter: widget.createFooter,
       columnMenuDelegate: widget.columnMenuDelegate,
@@ -928,8 +955,7 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
         BoxConstraints.loose(size),
       );
 
-      final double posX =
-          isLTR ? size.width - s.width + gridBorderWidth : 0;
+      final double posX = isLTR ? size.width - s.width + gridBorderWidth : 0;
 
       positionChild(
         _StackName.rightFrozenColumns,
@@ -1049,9 +1075,8 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
 
     if (hasChild(_StackName.leftFrozenRows)) {
       final double offset = isLTR ? bodyLeftOffset : bodyRightOffset;
-      final double posX = isLTR
-          ? 0
-          : size.width - bodyRightOffset + gridBorderWidth;
+      final double posX =
+          isLTR ? 0 : size.width - bodyRightOffset + gridBorderWidth;
 
       layoutChild(
         _StackName.leftFrozenRows,
@@ -1071,9 +1096,8 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
 
     if (hasChild(_StackName.leftFrozenColumnFooters)) {
       final double offset = isLTR ? bodyLeftOffset : bodyRightOffset;
-      final double posX = isLTR
-          ? 0
-          : size.width - bodyRightOffset + gridBorderWidth;
+      final double posX =
+          isLTR ? 0 : size.width - bodyRightOffset + gridBorderWidth;
 
       layoutChild(
         _StackName.leftFrozenColumnFooters,
@@ -1090,9 +1114,8 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
 
     if (hasChild(_StackName.rightFrozenRows)) {
       final double offset = isLTR ? bodyRightOffset : bodyLeftOffset;
-      final double posX = isLTR
-          ? size.width - bodyRightOffset + gridBorderWidth
-          : 0;
+      final double posX =
+          isLTR ? size.width - bodyRightOffset + gridBorderWidth : 0;
 
       layoutChild(
         _StackName.rightFrozenRows,
@@ -1117,8 +1140,7 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
         BoxConstraints.loose(Size(offset, size.height)),
       );
 
-      final double posX =
-          isLTR ? size.width - s.width + gridBorderWidth : 0;
+      final double posX = isLTR ? size.width - s.width + gridBorderWidth : 0;
 
       positionChild(
         _StackName.rightFrozenColumnFooters,

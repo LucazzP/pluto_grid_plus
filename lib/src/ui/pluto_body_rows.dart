@@ -101,11 +101,13 @@ class PlutoBodyRowsState extends PlutoStateWithChange<PlutoBodyRows> {
             scrollDirection: Axis.vertical,
             physics: const ClampingScrollPhysics(),
             itemCount: _rows.length,
-            itemExtent: stateManager.rowTotalHeight,
             key: stateManager.bodyRowsListViewKey,
+            itemExtent: stateManager.rowWrapper != null
+                ? null
+                : stateManager.rowTotalHeight,
             addRepaintBoundaries: false,
             itemBuilder: (ctx, i) {
-              return PlutoBaseRow(
+              Widget w = PlutoBaseRow(
                 key: ValueKey('body_row_${_rows[i].key}'),
                 rowIdx: i,
                 row: _rows[i],
@@ -113,6 +115,12 @@ class PlutoBodyRowsState extends PlutoStateWithChange<PlutoBodyRows> {
                 stateManager: stateManager,
                 visibilityLayout: true,
               );
+
+              if (stateManager.rowWrapper != null) {
+                w = stateManager.rowWrapper!(w);
+              }
+
+              return w;
             },
           ),
         ),

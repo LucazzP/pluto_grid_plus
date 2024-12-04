@@ -38,6 +38,9 @@ class PlutoGridPopup {
   /// {@macro pluto_grid_property_onRowsMoved}
   final PlutoOnRowsMovedEventCallback? onRowsMoved;
 
+  /// {@macro pluto_grid_property_onActiveCellChanged}
+  final PlutoOnActiveCellChangedEventCallback? onActiveCellChanged;
+
   /// {@macro pluto_grid_property_onColumnsMoved}
   final PlutoOnColumnsMovedEventCallback? onColumnsMoved;
 
@@ -75,6 +78,8 @@ class PlutoGridPopup {
 
   final double? height;
 
+  final bool? barrierDismissible; //
+
   PlutoGridPopup({
     required this.context,
     required this.columns,
@@ -88,6 +93,7 @@ class PlutoGridPopup {
     this.onRowDoubleTap,
     this.onRowSecondaryTap,
     this.onRowsMoved,
+    this.onActiveCellChanged,
     this.onColumnsMoved,
     this.createHeader,
     this.createFooter,
@@ -98,6 +104,7 @@ class PlutoGridPopup {
     this.mode = PlutoGridMode.normal,
     this.width,
     this.height,
+    this.barrierDismissible,
   }) {
     open();
   }
@@ -121,6 +128,7 @@ class PlutoGridPopup {
     PlutoGridOnSelectedEvent? selected =
         await showDialog<PlutoGridOnSelectedEvent>(
             context: context,
+            barrierDismissible: barrierDismissible ?? true,
             builder: (BuildContext ctx) {
               return Dialog(
                 shape: borderRadius == BorderRadius.zero
@@ -148,6 +156,7 @@ class PlutoGridPopup {
                           onRowDoubleTap: onRowDoubleTap,
                           onRowSecondaryTap: onRowSecondaryTap,
                           onRowsMoved: onRowsMoved,
+                          onActiveCellChanged: onActiveCellChanged,
                           onColumnsMoved: onColumnsMoved,
                           createHeader: createHeader,
                           createFooter: createFooter,

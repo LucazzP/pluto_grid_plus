@@ -73,6 +73,8 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
     required this.gridFocusNode,
     required this.scroll,
     List<PlutoColumnGroup>? columnGroups,
+    this.rowWrapper,
+    this.editCellWrapper,
     this.onChanged,
     this.onSelected,
     this.onSorted,
@@ -82,8 +84,10 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
     this.onRowEnter,
     this.onRowExit,
     this.onRowsMoved,
+    this.onActiveCellChanged,
     this.onColumnsMoved,
     this.rowColorCallback,
+    this.selectDateCallback,
     this.createHeader,
     this.createFooter,
     PlutoColumnMenuDelegate? columnMenuDelegate,
@@ -104,6 +108,13 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
     setGridMode(mode ?? PlutoGridMode.normal);
     _initialize();
   }
+
+  @override
+  final Widget Function(Widget rowWidget)? rowWrapper;
+
+  @override
+  final Widget Function(Widget editCellWidget, PlutoCell cell,
+      TextEditingController controller)? editCellWrapper;
 
   @override
   final FilteredList<PlutoColumn> refColumns;
@@ -148,6 +159,9 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
   final PlutoOnRowsMovedEventCallback? onRowsMoved;
 
   @override
+  final PlutoOnActiveCellChangedEventCallback? onActiveCellChanged;
+
+  @override
   final PlutoOnColumnsMovedEventCallback? onColumnsMoved;
 
   @override
@@ -158,6 +172,9 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
 
   @override
   final CreateFooterCallBack? createFooter;
+
+  @override
+  final PlutoSelectDateCallBack? selectDateCallback;
 
   @override
   final PlutoColumnMenuDelegate columnMenuDelegate;
@@ -224,6 +241,8 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
     required super.rows,
     required super.gridFocusNode,
     required super.scroll,
+    super.rowWrapper,
+    super.editCellWrapper,
     super.columnGroups,
     super.onChanged,
     super.onSelected,
@@ -234,8 +253,10 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
     super.onRowEnter,
     super.onRowExit,
     super.onRowsMoved,
+    super.onActiveCellChanged,
     super.onColumnsMoved,
     super.rowColorCallback,
+    super.selectDateCallback,
     super.createHeader,
     super.createFooter,
     super.columnMenuDelegate,
