@@ -773,7 +773,10 @@ mixin ColumnState implements IPlutoGridState {
       columnField: columnField,
     );
 
-    final rows = refColumns.originalList.map(toRow).toList(growable: false);
+    final rows = refColumns.originalList
+        .where((c) => c.enableSetColumnsMenuItem && c.title.trim().isNotEmpty)
+        .map(toRow)
+        .toList(growable: false);
 
     void handleOnRowChecked(PlutoGridOnRowCheckedEvent event) {
       if (event.isAll) {
