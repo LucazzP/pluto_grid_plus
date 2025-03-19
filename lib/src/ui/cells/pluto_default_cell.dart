@@ -100,6 +100,10 @@ class _PlutoDefaultCellState extends PlutoStateWithChange<PlutoDefaultCell> {
 
   @override
   void updateState(PlutoNotifierEvent event) {
+    final disable =
+        widget.column.disableRowCheckboxWhen?.call(widget.row) ?? false;
+    if (disable) return;
+
     _hasFocus = update<bool>(
       _hasFocus,
       stateManager.hasFocus,
@@ -354,6 +358,7 @@ class CheckboxSelectionWidgetState
   bool _tristate = false;
 
   bool? _checked;
+  bool _pureValue = false;
 
   @override
   PlutoGridStateManager get stateManager => widget.stateManager;
@@ -361,12 +366,19 @@ class CheckboxSelectionWidgetState
   @override
   void initState() {
     super.initState();
-
     updateState(PlutoNotifierEventForceUpdate.instance);
+    _pureValue = widget.row.checked ?? false;
   }
 
   @override
   void updateState(PlutoNotifierEvent event) {
+    final disable =
+        widget.column.disableRowCheckboxWhen?.call(widget.row) ?? false;
+    if (disable) {
+      _checked = _pureValue;
+      return;
+    }
+
     _tristate = update<bool>(
       _tristate,
       stateManager.enabledRowGroups && widget.row.type.isGroup,
@@ -410,9 +422,12 @@ class CheckboxSelectionWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final disable =
+        widget.column.disableRowCheckboxWhen?.call(widget.row) ?? false;
+
     return PlutoScaledCheckbox(
       value: _checked,
-      handleOnChanged: _handleOnChanged,
+      handleOnChanged: disable ? null : _handleOnChanged,
       tristate: _tristate,
       scale: 0.86,
       unselectedColor: stateManager.configuration.style.cellUnselectedColor,
@@ -471,6 +486,18 @@ class _DefaultCellWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Check for cell renderer first
+    if (cell.hasRenderer) {
+      return cell.renderer!(PlutoCellRendererContext(
+        column: column,
+        rowIdx: rowIdx,
+        row: row,
+        cell: cell,
+        stateManager: stateManager,
+      ));
+    }
+
+    // Fall back to column renderer
     if (column.hasRenderer) {
       return column.renderer!(PlutoColumnRendererContext(
         column: column,

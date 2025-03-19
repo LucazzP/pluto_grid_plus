@@ -113,7 +113,7 @@ class _DevelopmentScreenState extends State<DevelopmentScreen> {
   void initState() {
     super.initState();
 
-    const _Test test = _Test.b;
+    const _Test test = _Test.a;
 
     // PlutoChangeNotifierFilter.debug = true;
     // PlutoChangeNotifierFilter.debugWidgets = [
@@ -128,6 +128,16 @@ class _DevelopmentScreenState extends State<DevelopmentScreen> {
       columns.addAll(testColumnsA);
       columnGroups.addAll(testColumnGroupsA);
       rows.addAll(DummyData.rowsByColumns(length: 10000, columns: columns));
+      rows.insert(
+          0,
+          PlutoRow(
+            cells: Map.fromIterables(
+              columns.map((e) => e.field),
+              columns.map((e) => PlutoCell(value: 'frozen')),
+            ),
+            frozen: PlutoRowFrozen.start,
+          ));
+
       rowColorCallback = (PlutoRowColorContext rowColorContext) {
         return rowColorContext.row.cells['column2']?.value == 'green'
             ? const Color(0xFFE2F6DF)
@@ -1059,7 +1069,7 @@ final testColumnsA = [
     titleTextAlign: PlutoColumnTextAlign.center,
     enableAutoEditing: true,
     type: PlutoColumnType.date(
-        // headerFormat: 'yyyy 년 MM 월',
+        // headerFormat: 'yyyy ', // 'yyyy ', // 'yyyyMM', //'yyyy-MM-dd'
         // startDate: DateTime(2022, 01, 09),
         // endDate: DateTime(2022, 08, 10),
         ),

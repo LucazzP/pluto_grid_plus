@@ -109,8 +109,9 @@ class PlutoGridStateChangeNotifier extends PlutoChangeNotifier
     _initialize();
   }
 
+  /// {@macro pluto_grid_row_wrapper}
   @override
-  final Widget Function(Widget rowWidget)? rowWrapper;
+  final RowWrapper? rowWrapper;
 
   @override
   final Widget Function(Widget editCellWidget, PlutoCell cell,
@@ -274,6 +275,48 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
     );
   }
 
+  void scrollToColumn(PlutoColumn column) {
+    final index = refColumns.indexOf(column);
+
+    if (index == -1) return;
+
+    double jumpTo = column.startPosition;
+    if (jumpTo > scroll.maxScrollHorizontal) {
+      jumpTo = scroll.maxScrollHorizontal;
+    }
+
+    scroll.horizontal?.jumpTo(jumpTo);
+  }
+
+  /// Returns a list of columns that are currently visible in the viewport
+  List<PlutoColumn> getVisibleColumns() {
+    if (refColumns.isEmpty) return [];
+
+    return refColumns.where((column) => isColumnVisible(column)).toList();
+  }
+
+  /// Checks if a specific column is currently visible in the viewport
+  bool isColumnVisible(PlutoColumn column) {
+    if (column.hide) return false;
+
+    final RenderBox? gridRenderBox =
+        gridKey.currentContext?.findRenderObject() as RenderBox?;
+
+    if (gridRenderBox == null) {
+      return false;
+    }
+
+    final scrollPosition = scroll.horizontal?.offset ?? 0;
+    final viewportWidth = gridRenderBox.size.width;
+    final viewportEnd = scrollPosition + viewportWidth;
+
+    final columnStart = column.startPosition;
+    final columnEnd = columnStart + column.width;
+
+    // Column is visible if any part of it is in the viewport
+    return (columnStart <= viewportEnd && columnEnd > scrollPosition);
+  }
+
   /// It handles the necessary settings when [rows] are first set or added to the [PlutoGrid].
   ///
   /// {@template initialize_rows_params}
@@ -331,7 +374,7 @@ class PlutoGridStateManager extends PlutoGridStateChangeNotifier {
   /// [PlutoGridStateManager.initializeRowsAsync] repeats [Timer] every [duration],
   /// Process the setting of [refRows] by the size of [chunkSize].
   /// [Isolate] is a good way to handle CPU heavy work, but
-  /// The condition that List<PlutoRow> cannot be passed to Isolate
+  /// The condition that List&lt;PlutoRow&gt; cannot be passed to Isolate
   /// solves the problem of UI freezing by dividing the work with Timer.
   ///
   /// {@macro initialize_rows_params}

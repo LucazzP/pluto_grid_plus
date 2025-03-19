@@ -42,7 +42,10 @@ typedef PlutoSelectDateCallBack = Future<DateTime?> Function(
     PlutoCell dateCell, PlutoColumn column);
 
 typedef PlutoOnActiveCellChangedEventCallback = void Function(
-  PlutoGridOnActiveCellChangedEvent event);
+    PlutoGridOnActiveCellChangedEvent event);
+
+typedef RowWrapper = Widget Function(
+    BuildContext context, Widget row, PlutoGridStateManager stateManager);
 
 /// [PlutoGrid] is a widget that receives columns and rows and is expressed as a grid-type UI.
 ///
@@ -83,7 +86,8 @@ class PlutoGrid extends PlutoStatefulWidget {
     this.mode = PlutoGridMode.normal,
   });
 
-  final Widget Function(Widget rowWidget)? rowWrapper;
+  /// {@macro pluto_grid_row_wrapper}
+  final RowWrapper? rowWrapper;
 
   final Widget Function(Widget editCellWidget, PlutoCell cell,
       TextEditingController controller)? editCellWrapper;
@@ -323,7 +327,7 @@ class PlutoGrid extends PlutoStatefulWidget {
   /// Column menu can be customized.
   ///
   /// See the demo example link below.
-  /// https://github.com/bosskmk/pluto_grid/blob/master/demo/lib/screen/feature/column_menu_screen.dart
+  /// https://github.com/doonfrs/pluto_grid_plus/blob/master/demo/lib/screen/feature/column_menu_screen.dart
   /// {@endtemplate}
   final PlutoColumnMenuDelegate? columnMenuDelegate;
 

@@ -1,5 +1,8 @@
 import 'dart:math';
 
+import 'package:demo/screen/empty_screen.dart';
+import 'package:demo/screen/feature/check_visible_columns_screen.dart';
+import 'package:demo/screen/feature/frozen_rows_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -12,6 +15,7 @@ import '../widget/pluto_text_color_animation.dart';
 import 'development_screen.dart';
 import 'feature/add_and_remove_column_row_screen.dart';
 import 'feature/add_rows_asynchronously.dart';
+import 'feature/column_renderer_screen.dart';
 import 'feature/cell_renderer_screen.dart';
 import 'feature/cell_selection_screen.dart';
 import 'feature/column_filtering_screen.dart';
@@ -47,6 +51,7 @@ import 'feature/selection_type_column_screen.dart';
 import 'feature/text_type_column_screen.dart';
 import 'feature/time_type_column_screen.dart';
 import 'feature/value_formatter_screen.dart';
+import 'feature/pages_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   static const routeName = '/';
@@ -114,7 +119,8 @@ class HomeScreen extends StatelessWidget {
                                   icon: const FaIcon(FontAwesomeIcons.link),
                                   color: Colors.white,
                                   onPressed: () {
-                                    launchUrl('https://pub.dev/packages/pluto_grid_plus');
+                                    launchUrl(
+                                        'https://pub.dev/packages/pluto_grid_plus');
                                   },
                                 ),
                                 const Text(
@@ -145,7 +151,8 @@ class HomeScreen extends StatelessWidget {
                                   icon: const FaIcon(FontAwesomeIcons.github),
                                   color: Colors.white,
                                   onPressed: () {
-                                    launchUrl('https://github.com/doonfrs/pluto_grid_plus');
+                                    launchUrl(
+                                        'https://github.com/doonfrs/pluto_grid_plus');
                                   },
                                 ),
                                 const Text(
@@ -389,6 +396,14 @@ class PlutoFeatures extends StatelessWidget {
             },
           ),
           PlutoListTile(
+            title: 'Frozen Rows',
+            description:
+                'Demonstrates rows frozen at top and bottom with pagination',
+            onTapLiveDemo: () {
+              Navigator.pushNamed(context, FrozenRowsScreen.routeName);
+            },
+          ),
+          PlutoListTile(
             title: 'Add rows asynchronously',
             description: 'Adds or sets rows asynchronously.',
             onTapLiveDemo: () {
@@ -407,9 +422,17 @@ class PlutoFeatures extends StatelessWidget {
             },
           ),
           PlutoListTile(
+            title: 'Column renderer',
+            description:
+                'You can change the widget of the column through the renderer.',
+            onTapLiveDemo: () {
+              Navigator.pushNamed(context, ColumnRendererScreen.routeName);
+            },
+          ),
+          PlutoListTile(
             title: 'Cell renderer',
             description:
-                'You can change the widget of the cell through the renderer.',
+                'You can customize individual cells with cell-level renderers.',
             onTapLiveDemo: () {
               Navigator.pushNamed(context, CellRendererScreen.routeName);
             },
@@ -482,11 +505,36 @@ class PlutoFeatures extends StatelessWidget {
               Navigator.pushNamed(context, ExportScreen.routeName);
             },
           ),
+          PlutoListTile(
+            title: 'Pages list',
+            description: 'A list of pages to test various functions.',
+            onTapLiveDemo: () {
+              Navigator.pushNamed(context, PagesListScreen.routeName);
+            },
+          ),
+          PlutoListTile(
+            title: 'Check visible columns',
+            description: 'Check visible columns.',
+            onTapLiveDemo: () {
+              Navigator.pushNamed(
+                context,
+                CheckVisibleColumnsScreen.routeName,
+              );
+            },
+          ),
           PlutoListTile.dark(
             title: 'Dark mode',
             description: 'Change the entire theme of the grid to Dark.',
             onTapLiveDemo: () {
               Navigator.pushNamed(context, DarkModeScreen.routeName);
+            },
+          ),
+          PlutoListTile.amber(
+            title: 'Empty',
+            description:
+                'This screen is used during development, this is a template to test issues',
+            onTapLiveDemo: () {
+              Navigator.pushNamed(context, EmptyScreen.routeName);
             },
           ),
           PlutoListTile.amber(
@@ -518,6 +566,13 @@ class PlutoContributors extends StatelessWidget {
             linkTitle: 'Github',
             onTapLink: () {
               launchUrl('https://github.com/bosskmk');
+            },
+          ),
+          PlutoContributorTile(
+            name: 'Feras Abdalrahman (Maintainer)',
+            linkTitle: 'Github',
+            onTapLink: () {
+              launchUrl('https://github.com/doonfrs');
             },
           ),
           PlutoContributorTile(
@@ -706,7 +761,7 @@ class PlutoContributors extends StatelessWidget {
             name: 'And you.',
             linkTitle: 'Github',
             onTapLink: () {
-              launchUrl('https://github.com/bosskmk/pluto_grid');
+              launchUrl('https://github.com/doonfrs/pluto_grid_plus');
             },
           ),
         ],

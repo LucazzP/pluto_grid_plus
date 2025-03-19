@@ -12,12 +12,16 @@ typedef PlutoLazyPaginationFetch = Future<PlutoLazyPaginationResponse> Function(
 class PlutoLazyPaginationRequest {
   PlutoLazyPaginationRequest({
     required this.page,
+    this.pageSize = 10,
     this.sortColumn,
     this.filterRows = const <PlutoRow>[],
   });
 
   /// Request page.
   final int page;
+
+  /// Page size (items per page)
+  final int pageSize;
 
   /// If the sort condition is set, the column for which the sort is set.
   /// The value of [PlutoColumn.sort] is the sort status of the column.
@@ -51,6 +55,7 @@ class PlutoLazyPaginationResponse {
   PlutoLazyPaginationResponse({
     required this.totalPage,
     required this.rows,
+    this.totalRecords,
   });
 
   /// Total number of pages to create pagination buttons.
@@ -58,6 +63,9 @@ class PlutoLazyPaginationResponse {
 
   /// Rows to be added.
   final List<PlutoRow> rows;
+
+  /// Total number of records
+  final int? totalRecords;
 }
 
 /// Widget for processing lazy pagination.
@@ -71,19 +79,30 @@ class PlutoLazyPaginationResponse {
 /// },
 /// ```
 class PlutoLazyPagination extends StatefulWidget {
-  const PlutoLazyPagination({
+  PlutoLazyPagination({
     this.initialPage = 1,
+    this.initialPageSize = 10,
     this.initialFetch = true,
     this.fetchWithSorting = true,
     this.fetchWithFiltering = true,
     this.pageSizeToMove,
+    this.showPageSizeSelector = false,
+    this.pageSizes = const [10, 20, 30, 50, 100],
+    this.onPageSizeChanged,
+    this.dropdownDecoration,
+    this.dropdownItemDecoration,
+    this.pageSizeDropdownIcon,
     required this.fetch,
     required this.stateManager,
     super.key,
-  });
+  }) : assert(!showPageSizeSelector || pageSizes.contains(initialPageSize),
+            'initialPageSize must be included in pageSizes list when showPageSizeSelector is true');
 
   /// Set the first page.
   final int initialPage;
+
+  /// Set the initial page size
+  final int initialPageSize;
 
   /// Decide whether to call the fetch function first.
   final bool initialFetch;
@@ -107,31 +126,56 @@ class PlutoLazyPagination extends StatefulWidget {
   /// If this value is set to 1, the next previous page is moved by one page.
   final int? pageSizeToMove;
 
+  /// Whether to show page size selector dropdown
+  final bool showPageSizeSelector;
+
+  /// Available page sizes in dropdown (only used when showPageSizeSelector is true)
+  final List<int> pageSizes;
+
+  /// Callback when page size changes (only used when showPageSizeSelector is true)
+  final void Function(int pageSize)? onPageSizeChanged;
+
+  /// Decoration for the dropdown button (only used when showPageSizeSelector is true)
+  final BoxDecoration? dropdownDecoration;
+
+  /// Decoration for dropdown items (only used when showPageSizeSelector is true)
+  final BoxDecoration? dropdownItemDecoration;
+
+  /// Icon for the dropdown (only used when showPageSizeSelector is true)
+  final Icon? pageSizeDropdownIcon;
+
   /// A callback function that returns the data to be added.
   final PlutoLazyPaginationFetch fetch;
 
   final PlutoGridStateManager stateManager;
 
   @override
-  State<PlutoLazyPagination> createState() => _PlutoLazyPaginationState();
+  State<PlutoLazyPagination> createState() => PlutoLazyPaginationState();
 }
 
-class _PlutoLazyPaginationState extends State<PlutoLazyPagination> {
+class PlutoLazyPaginationState extends State<PlutoLazyPagination> {
   late final StreamSubscription<PlutoGridEvent> _events;
 
   int _page = 1;
-
+  late int _pageSize;
   int _totalPage = 0;
-
+  int? _totalRecords;
   bool _isFetching = false;
 
   PlutoGridStateManager get stateManager => widget.stateManager;
+
+  // Expose state
+  int get page => _page;
+  int get pageSize => _pageSize;
+  int get totalPage => _totalPage;
+  int? get totalRecords => _totalRecords;
 
   @override
   void initState() {
     super.initState();
 
     _page = widget.initialPage;
+    _pageSize = widget.initialPageSize;
 
     if (widget.fetchWithSorting) {
       stateManager.setSortOnlyEvent(true);
@@ -153,7 +197,6 @@ class _PlutoLazyPaginationState extends State<PlutoLazyPagination> {
   @override
   void dispose() {
     _events.cancel();
-
     super.dispose();
   }
 
@@ -175,12 +218,13 @@ class _PlutoLazyPaginationState extends State<PlutoLazyPagination> {
         .fetch(
       PlutoLazyPaginationRequest(
         page: page,
+        pageSize: _pageSize,
         sortColumn: stateManager.getSortedColumn,
         filterRows: stateManager.filterRows,
       ),
     )
         .then((data) {
-      if(!mounted)return;
+      if (!mounted) return;
       stateManager.scroll.bodyRowsVertical!.jumpTo(0);
 
       stateManager.refRows.clearFromOriginal();
@@ -188,9 +232,8 @@ class _PlutoLazyPaginationState extends State<PlutoLazyPagination> {
 
       setState(() {
         _page = page;
-
         _totalPage = data.totalPage;
-
+        _totalRecords = data.totalRecords;
         _isFetching = false;
       });
 
@@ -198,9 +241,20 @@ class _PlutoLazyPaginationState extends State<PlutoLazyPagination> {
     });
   }
 
+  void setPageSize(int size) {
+    if (_pageSize == size) return;
+
+    setState(() {
+      _pageSize = size;
+    });
+
+    // Reset to first page with new page size
+    setPage(1);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return _PaginationWidget(
+    return _PageSizeDropdownPaginationWidget(
       iconColor: stateManager.style.iconColor,
       disabledIconColor: stateManager.style.disabledIconColor,
       activatedColor: stateManager.style.activatedBorderColor,
@@ -210,52 +264,70 @@ class _PlutoLazyPaginationState extends State<PlutoLazyPagination> {
       totalPage: _totalPage,
       pageSizeToMove: widget.pageSizeToMove,
       setPage: setPage,
+      pageSizes: widget.pageSizes,
+      currentPageSize: _pageSize,
+      onPageSizeChanged: (size) {
+        setPageSize(size);
+        if (widget.onPageSizeChanged != null) {
+          widget.onPageSizeChanged!(size);
+        }
+      },
+      dropdownDecoration: widget.dropdownDecoration,
+      dropdownItemDecoration: widget.dropdownItemDecoration,
+      pageSizeDropdownIcon: widget.pageSizeDropdownIcon,
+      totalRecords: totalRecords,
+      showPageSizeSelector: widget.showPageSizeSelector,
     );
   }
 }
 
-class _PaginationWidget extends StatefulWidget {
-  const _PaginationWidget({
+/// Widget with page size dropdown
+class _PageSizeDropdownPaginationWidget extends StatefulWidget {
+  const _PageSizeDropdownPaginationWidget({
     required this.iconColor,
     required this.disabledIconColor,
     required this.activatedColor,
     required this.iconSize,
     required this.height,
-    this.page = 1,
+    required this.page,
     required this.totalPage,
     this.pageSizeToMove,
     required this.setPage,
+    required this.pageSizes,
+    required this.currentPageSize,
+    required this.onPageSizeChanged,
+    this.dropdownDecoration,
+    this.dropdownItemDecoration,
+    this.pageSizeDropdownIcon,
+    this.showPageSizeSelector = false,
+    this.totalRecords,
   });
 
   final Color iconColor;
-
   final Color disabledIconColor;
-
   final Color activatedColor;
-
   final double iconSize;
-
   final double height;
-
   final int page;
-
   final int totalPage;
-
-  /// Set the number of moves to the previous or next page button.
-  ///
-  /// Default is null.
-  /// Moves the page as many as the number of page buttons currently displayed.
-  ///
-  /// If this value is set to 1, the next previous page is moved by one page.
   final int? pageSizeToMove;
-
   final void Function(int page) setPage;
+  final List<int> pageSizes;
+  final int currentPageSize;
+  final void Function(int) onPageSizeChanged;
+  final BoxDecoration? dropdownDecoration;
+  final BoxDecoration? dropdownItemDecoration;
+  final Icon? pageSizeDropdownIcon;
+  final bool showPageSizeSelector;
+  final int? totalRecords;
 
   @override
-  State<_PaginationWidget> createState() => _PaginationWidgetState();
+  State<_PageSizeDropdownPaginationWidget> createState() =>
+      _PageSizeDropdownPaginationWidgetState();
 }
 
-class _PaginationWidgetState extends State<_PaginationWidget> {
+class _PageSizeDropdownPaginationWidgetState
+    extends State<_PageSizeDropdownPaginationWidget> {
   double _maxWidth = 0;
 
   final _iconSplashRadius = PlutoGridSettings.rowHeight / 2;
@@ -264,37 +336,26 @@ class _PaginationWidgetState extends State<_PaginationWidget> {
 
   bool get _isLastPage => widget.page > widget.totalPage - 1;
 
-  /// maxWidth < 450 : 1
-  /// maxWidth >= 450 : 3
-  /// maxWidth >= 550 : 5
-  /// maxWidth >= 650 : 7
   int get _itemSize {
     final countItemSize = ((_maxWidth - 350) / 100).floor();
-
     return countItemSize < 0 ? 0 : min(countItemSize, 3);
   }
 
   int get _startPage {
     final itemSizeGap = _itemSize + 1;
-
     var start = widget.page - itemSizeGap;
-
     if (widget.page + _itemSize > widget.totalPage) {
       start -= _itemSize + widget.page - widget.totalPage;
     }
-
     return start < 0 ? 0 : start;
   }
 
   int get _endPage {
     final itemSizeGap = _itemSize + 1;
-
     var end = widget.page + _itemSize;
-
     if (widget.page - itemSizeGap < 0) {
       end += itemSizeGap - widget.page;
     }
-
     return end > widget.totalPage ? widget.totalPage : end;
   }
 
@@ -307,11 +368,7 @@ class _PaginationWidgetState extends State<_PaginationWidget> {
   }
 
   int get _pageSizeToMove {
-    if (widget.pageSizeToMove == null) {
-      return 1 + (_itemSize * 2);
-    }
-
-    return widget.pageSizeToMove!;
+    return widget.pageSizeToMove ?? 1;
   }
 
   void _firstPage() {
@@ -320,21 +377,17 @@ class _PaginationWidgetState extends State<_PaginationWidget> {
 
   void _beforePage() {
     int beforePage = widget.page - _pageSizeToMove;
-
     if (beforePage < 1) {
       beforePage = 1;
     }
-
     _movePage(beforePage);
   }
 
   void _nextPage() {
     int nextPage = widget.page + _pageSizeToMove;
-
     if (nextPage > widget.totalPage) {
       nextPage = widget.totalPage;
     }
-
     _movePage(nextPage);
   }
 
@@ -364,9 +417,7 @@ class _PaginationWidgetState extends State<_PaginationWidget> {
 
   Widget _makeNumberButton(int index) {
     var pageFromIndex = index + 1;
-
     var isCurrentIndex = widget.page == pageFromIndex;
-
     return TextButton(
       onPressed: () {
         _movePage(pageFromIndex);
@@ -390,57 +441,144 @@ class _PaginationWidgetState extends State<_PaginationWidget> {
           height: widget.height,
           child: Align(
             alignment: Alignment.center,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: _isFirstPage ? null : _firstPage,
-                    icon: const Icon(Icons.first_page),
-                    color: widget.iconColor,
-                    disabledColor: widget.disabledIconColor,
-                    splashRadius: _iconSplashRadius,
-                    mouseCursor: _isFirstPage
-                        ? SystemMouseCursors.basic
-                        : SystemMouseCursors.click,
-                  ),
-                  IconButton(
-                    onPressed: _isFirstPage ? null : _beforePage,
-                    icon: const Icon(Icons.navigate_before),
-                    color: widget.iconColor,
-                    disabledColor: widget.disabledIconColor,
-                    splashRadius: _iconSplashRadius,
-                    mouseCursor: _isFirstPage
-                        ? SystemMouseCursors.basic
-                        : SystemMouseCursors.click,
-                  ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (widget.totalRecords != null) _totalRecordsWidget(),
+                const Spacer(),
+                Row(children: [
+                  _firstPageIconButton(),
+                  _beforePageIconButton(),
                   ..._pageNumbers.map(_makeNumberButton),
-                  IconButton(
-                    onPressed: _isLastPage ? null : _nextPage,
-                    icon: const Icon(Icons.navigate_next),
-                    color: widget.iconColor,
-                    disabledColor: widget.disabledIconColor,
-                    splashRadius: _iconSplashRadius,
-                    mouseCursor: _isLastPage
-                        ? SystemMouseCursors.basic
-                        : SystemMouseCursors.click,
-                  ),
-                  IconButton(
-                    onPressed: _isLastPage ? null : _lastPage,
-                    icon: const Icon(Icons.last_page),
-                    color: widget.iconColor,
-                    disabledColor: widget.disabledIconColor,
-                    splashRadius: _iconSplashRadius,
-                    mouseCursor: _isLastPage
-                        ? SystemMouseCursors.basic
-                        : SystemMouseCursors.click,
-                  ),
-                ],
-              ),
+                  _nextPageIconButton(),
+                  _lastPageIconButton(),
+                ]),
+                const Spacer(),
+                if (widget.showPageSizeSelector) _pageSizeDropdownButton(),
+              ],
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _totalRecordsWidget() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Row(
+        children: [
+          Icon(
+            Icons.table_rows,
+            color: widget.iconColor,
+            size: widget.iconSize,
+          ),
+          Text(
+            widget.totalRecords.toString(),
+            style: TextStyle(
+              color: widget.iconColor,
+              fontSize: widget.iconSize,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  IconButton _lastPageIconButton() {
+    return IconButton(
+      onPressed: _isLastPage ? null : _lastPage,
+      icon: const Icon(Icons.last_page),
+      color: widget.iconColor,
+      disabledColor: widget.disabledIconColor,
+      splashRadius: _iconSplashRadius,
+      mouseCursor:
+          _isLastPage ? SystemMouseCursors.basic : SystemMouseCursors.click,
+    );
+  }
+
+  IconButton _nextPageIconButton() {
+    return IconButton(
+      onPressed: _isLastPage ? null : _nextPage,
+      icon: const Icon(Icons.navigate_next),
+      color: widget.iconColor,
+      disabledColor: widget.disabledIconColor,
+      splashRadius: _iconSplashRadius,
+      mouseCursor:
+          _isLastPage ? SystemMouseCursors.basic : SystemMouseCursors.click,
+    );
+  }
+
+  IconButton _beforePageIconButton() {
+    return IconButton(
+      onPressed: _isFirstPage ? null : _beforePage,
+      icon: const Icon(Icons.navigate_before),
+      color: widget.iconColor,
+      disabledColor: widget.disabledIconColor,
+      splashRadius: _iconSplashRadius,
+      mouseCursor:
+          _isFirstPage ? SystemMouseCursors.basic : SystemMouseCursors.click,
+    );
+  }
+
+  IconButton _firstPageIconButton() {
+    return IconButton(
+      onPressed: _isFirstPage ? null : _firstPage,
+      icon: const Icon(Icons.first_page),
+      color: widget.iconColor,
+      disabledColor: widget.disabledIconColor,
+      splashRadius: _iconSplashRadius,
+      mouseCursor:
+          _isFirstPage ? SystemMouseCursors.basic : SystemMouseCursors.click,
+    );
+  }
+
+  Widget _pageSizeDropdownButton() {
+    return Container(
+      decoration: widget.dropdownDecoration,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Row(
+        children: [
+          Icon(
+            Icons.view_list,
+            color: widget.iconColor,
+            size: widget.iconSize,
+          ),
+          const SizedBox(width: 8),
+          SizedBox(
+            child: DropdownButton<int>(
+              value: widget.currentPageSize,
+              focusColor: Colors.transparent,
+              underline: const SizedBox.shrink(),
+              icon: widget.pageSizeDropdownIcon ??
+                  Icon(
+                    Icons.arrow_drop_down,
+                    color: widget.iconColor,
+                  ),
+              items: widget.pageSizes.map<DropdownMenuItem<int>>((int value) {
+                return DropdownMenuItem<int>(
+                  value: value,
+                  child: Container(
+                    decoration: widget.dropdownItemDecoration,
+                    child: Text(
+                      '$value',
+                      style: TextStyle(
+                        color: widget.iconColor,
+                        fontSize: widget.iconSize,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+              onChanged: (int? value) {
+                if (value != null) {
+                  widget.onPageSizeChanged(value);
+                }
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

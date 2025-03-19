@@ -1,3 +1,4 @@
+import 'package:demo/screen/feature/check_visible_columns_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -6,6 +7,7 @@ import 'screen/development_screen.dart';
 import 'screen/empty_screen.dart';
 import 'screen/feature/add_and_remove_column_row_screen.dart';
 import 'screen/feature/add_rows_asynchronously.dart';
+import 'screen/feature/column_renderer_screen.dart';
 import 'screen/feature/cell_renderer_screen.dart';
 import 'screen/feature/cell_selection_screen.dart';
 import 'screen/feature/column_filtering_screen.dart';
@@ -42,6 +44,8 @@ import 'screen/feature/text_type_column_screen.dart';
 import 'screen/feature/time_type_column_screen.dart';
 import 'screen/feature/value_formatter_screen.dart';
 import 'screen/home_screen.dart';
+import 'screen/feature/pages_list_screen.dart';
+import 'screen/feature/frozen_rows_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -53,6 +57,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       initialRoute:
           kReleaseMode ? HomeScreen.routeName : DevelopmentScreen.routeName,
       routes: {
@@ -61,8 +66,12 @@ class MyApp extends StatelessWidget {
             const AddAndRemoveColumnRowScreen(),
         AddRowsAsynchronouslyScreen.routeName: (context) =>
             const AddRowsAsynchronouslyScreen(),
+        ColumnRendererScreen.routeName: (context) =>
+            const ColumnRendererScreen(),
         CellRendererScreen.routeName: (context) => const CellRendererScreen(),
         CellSelectionScreen.routeName: (context) => const CellSelectionScreen(),
+        CheckVisibleColumnsScreen.routeName: (context) =>
+            const CheckVisibleColumnsScreen(),
         RTLScreen.routeName: (context) => const RTLScreen(),
         ColumnFilteringScreen.routeName: (context) =>
             const ColumnFilteringScreen(),
@@ -112,6 +121,8 @@ class MyApp extends StatelessWidget {
         // only development
         EmptyScreen.routeName: (context) => const EmptyScreen(),
         DevelopmentScreen.routeName: (context) => const DevelopmentScreen(),
+        PagesListScreen.routeName: (context) => const PagesListScreen(),
+        FrozenRowsScreen.routeName: (context) => const FrozenRowsScreen(),
       },
       theme: ThemeData(
         primaryColor: PlutoGridExampleColors.primaryColor,

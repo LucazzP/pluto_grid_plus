@@ -17,6 +17,7 @@ export './src/manager/event/pluto_grid_cannot_move_current_cell_event.dart';
 export './src/manager/event/pluto_grid_cell_gesture_event.dart';
 export './src/manager/event/pluto_grid_change_column_filter_event.dart';
 export './src/manager/event/pluto_grid_change_column_sort_event.dart';
+export './src/manager/event/pluto_grid_clear_columns_filter_event.dart';
 export './src/manager/event/pluto_grid_drag_rows_event.dart';
 export './src/manager/event/pluto_grid_event.dart';
 export './src/manager/event/pluto_grid_scroll_update_event.dart';
@@ -27,7 +28,8 @@ export './src/manager/pluto_grid_event_manager.dart';
 export './src/manager/pluto_grid_key_manager.dart';
 export './src/manager/pluto_grid_state_manager.dart';
 export './src/manager/shortcut/shortcut.dart';
-export './src/model/pluto_cell.dart';
+export './src/model/pluto_cell.dart'
+    show PlutoCell, PlutoCellRenderer, PlutoCellRendererContext;
 export './src/model/pluto_column.dart';
 export './src/model/pluto_column_group.dart';
 export './src/model/pluto_column_type.dart';

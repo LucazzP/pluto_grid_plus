@@ -4,10 +4,12 @@ import 'package:flutter/services.dart';
 class PlutoKeyManagerEvent {
   FocusNode focusNode;
   KeyEvent event;
+  bool Function(LogicalKeyboardKey key)? isLogicalKeyPressed;
 
   PlutoKeyManagerEvent({
     required this.focusNode,
     required this.event,
+    this.isLogicalKeyPressed,
   });
 
   bool get needsThrottle => isMoving || isTab || isPageUp || isPageDown;
@@ -38,13 +40,13 @@ class PlutoKeyManagerEvent {
   bool get isEnd => event.logicalKey.keyId == LogicalKeyboardKey.end.keyId;
 
   bool get isPageUp {
-    // windows 에서 pageUp keyId 가 0x10700000021.
+    // On Windows, pageUp keyId is 0x10700000021.
     return event.logicalKey.keyId == LogicalKeyboardKey.pageUp.keyId ||
         event.logicalKey.keyId == 0x10700000021;
   }
 
   bool get isPageDown {
-    // windows 에서 pageDown keyId 가 0x10700000022.
+    // On Windows, pageDown keyId is 0x10700000022.
     return event.logicalKey.keyId == LogicalKeyboardKey.pageDown.keyId ||
         event.logicalKey.keyId == 0x10700000022;
   }
@@ -66,11 +68,43 @@ class PlutoKeyManagerEvent {
   bool get isBackspace =>
       event.logicalKey.keyId == LogicalKeyboardKey.backspace.keyId;
 
-  bool get isShift =>
-      event.logicalKey.keyId == LogicalKeyboardKey.shift.keyId;
+  /// This can be:
+  ///
+  /// LogicalKeyboardKey.shift
+  /// LogicalKeyboardKey.shiftLeft
+  /// LogicalKeyboardKey.shiftRight
+  bool get isShift => [
+        LogicalKeyboardKey.shift,
+        LogicalKeyboardKey.shiftLeft,
+        LogicalKeyboardKey.shiftRight,
+      ].any((lKey) => lKey.keyId == event.logicalKey.keyId);
 
-  bool get isControl =>
-      event.logicalKey.keyId == LogicalKeyboardKey.control.keyId;
+  bool get isLeftShift => [
+        LogicalKeyboardKey.shiftLeft,
+      ].any((lKey) => lKey.keyId == event.logicalKey.keyId);
+
+  bool get isRightShift => [
+        LogicalKeyboardKey.shiftRight,
+      ].any((lKey) => lKey.keyId == event.logicalKey.keyId);
+
+  /// This can be:
+  ///
+  /// LogicalKeyboardKey.control
+  /// LogicalKeyboardKey.controlLeft
+  /// LogicalKeyboardKey.controlRight
+  bool get isControl => [
+        LogicalKeyboardKey.control,
+        LogicalKeyboardKey.controlLeft,
+        LogicalKeyboardKey.controlRight,
+      ].any((lKey) => lKey.keyId == event.logicalKey.keyId);
+
+  bool get isLeftControl => [
+        LogicalKeyboardKey.controlLeft,
+      ].any((lKey) => lKey.keyId == event.logicalKey.keyId);
+
+  bool get isRightControl => [
+        LogicalKeyboardKey.controlRight,
+      ].any((lKey) => lKey.keyId == event.logicalKey.keyId);
 
   bool get isCharacter => _characters.contains(event.logicalKey.keyId);
 

@@ -1,6 +1,76 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+## [8.4.14] - 2025. 03. 11
+
+Discontinued, please move to trin_grid
+
+
+## [8.4.13] - 2025. 03. 10
+
+* Added cell-level renderer support with PlutoCellRenderer
+
+## [8.4.12] - 2025. 03. 10
+
+* fix incase frozen columns & frozen rows
+* Enhance the readme texts
+
+## [8.4.11] - 2025. 03. 10
+
+* Introducing Frozen Rows
+
+## [8.4.10] - 2025. 03. 08
+
+* Translate all korean comments & unit tests to english
+
+## [8.4.9] - 2025. 03. 06
+
+* Added scrollToColumn method
+
+## [8.4.8] - 2025. 03. 06
+
+* Added getVisibleColumns method & isColumnVisible
+
+## [8.4.7] - 2025. 03. 04
+
+* Fix pagination bug
+
+## [8.4.6] - 2025. 03. 04
+
+* Remove Stratagy pattern from the pagination widget and simplify the code
+* Add total records
+* Enhance the ui of the pagination widget
+
+## [8.4.5] - 2025. 03. 01
+
+* add initialPageSize to PageSizeDropdownPlutoLazyPaginationStrategy and default pageSizeToMove to 1
+* Fix pagination bug
+
+## [8.4.4] - 2025. 03. 01
+
+* Added pagesize dropdown using strategy pattern
+* Upgraded to latest Flutter version
+* Used intl any version for compatibility
+* Added onClear and clearIcon parameters to filter widgets
+* Added filterWidgetDelegate to PlutoColumn
+* Added missing filterWidgetBuilder and onFilterSuffixTap parameters
+* Updated GitHub Actions tests
+* Added optional width parameter to column in PlutoColumnType.select
+* Added ability to disable row checkbox under specific conditions
+* Fixed issue #105
+* Added clear columns filter event
+* Added empty screen to homepage
+* Added VS Code formatting restrictions
+* Fixed unit tests
+* Added guard against missing scroll client (when disposed)
+* Improved row wrapper implementation
+* Changed WidgetBuilder to Widget Function(BuildContext, Widget)
+* Enhanced infinity scroll to continue updating if screen not filled
+* Fixed homescreen pointing to old package
+* Implemented ability to disable row checkbox under conditions
+* Added handling for pure checkbox values when disabled
+* Added null check to prevent 'Null check operator used on a null value' exception
+* Updated intl library to ^0.20.0
+* Added onActiveCellChanged event
 
 ## [8.4.3] - 2024. 10. 23
 
@@ -10,8 +80,6 @@ All notable changes to this project will be documented in this file.
 * Add PlutoGridRowSelectionCheckBehavior which enables automatically setting the CheckBox values of selected rows
 * Add PlutoGridRowSelectionCheckBehavior
 * Upgrade packages
-
-
 
 ## [8.4.2] - 2024. 07. 15
 
@@ -69,12 +137,12 @@ upgrade for flutter 3.22.0
 
 ## [6.0.4] - 2023. 3. 7
 
-* Add Scrollbar properties. <https://github.com/bosskmk/pluto_grid/issues/743>
+* Add Scrollbar properties. <https://github.com/doonfrs/pluto_grid_plus/issues/743>
 
 ## [6.0.3] - 2023. 3. 6
 
 * Add locales.(German, French)
-* Fix row group expanded bug. <https://github.com/bosskmk/pluto_grid/issues/775>
+* Fix row group expanded bug. <https://github.com/doonfrs/pluto_grid_plus/issues/775>
 
 ## [6.0.2] - 2023. 2. 2
 
@@ -102,7 +170,7 @@ upgrade for flutter 3.22.0
 
 * Fix sorting bug.  
   Fixed sorting issue with pagination applied.  
-  <https://github.com/bosskmk/pluto_grid/issues/668>
+  <https://github.com/doonfrs/pluto_grid_plus/issues/668>
 
 ## [5.4.6] - 2022. 11. 30
 
@@ -178,7 +246,7 @@ upgrade for flutter 3.22.0
 
 * Change PlutoGridStateManager.configuration to not null.
 * Add Currency column.
-  <https://github.com/bosskmk/pluto_grid/blob/master/demo/lib/screen/feature/currency_type_column_screen.dart>
+  <https://github.com/doonfrs/pluto_grid_plus/blob/master/demo/lib/screen/feature/currency_type_column_screen.dart>
 
 ## [5.1.1] - 2022. 9. 25
 
@@ -561,7 +629,7 @@ upgrade for flutter 3.22.0
 
 ## [0.1.20] - 2020. 10. 28
 
-* Add textAlign to column property.(PlutoColumnTextAlign.Left, or Right) [#49](https://github.com/bosskmk/pluto_grid/issues/49)
+* Add textAlign to column property.(PlutoColumnTextAlign.Left, or Right) [#49](https://github.com/doonfrs/pluto_grid_plus/issues/49)
 
 ## [0.1.19] - 2020. 10. 23
 
@@ -574,7 +642,7 @@ upgrade for flutter 3.22.0
 
 ## [0.1.17] - 2020. 10. 4
 
-* Cell selection problem. [#35](https://github.com/bosskmk/pluto_grid/issues/35)
+* Cell selection problem. [#35](https://github.com/doonfrs/pluto_grid_plus/issues/35)
 * Modified so that AutoSize of column operates according to default TextStyle.
 
 ## [0.1.16] - 2020. 10. 2
@@ -645,7 +713,7 @@ upgrade for flutter 3.22.0
 
 ## [0.1.4] - 2020. 8. 29
 
-* fixed column bug. [#1](https://github.com/bosskmk/pluto_grid/issues/1)
+* fixed column bug. [#1](https://github.com/doonfrs/pluto_grid_plus/issues/1)
 
 ## [0.1.3] - 2020. 8. 28
 
