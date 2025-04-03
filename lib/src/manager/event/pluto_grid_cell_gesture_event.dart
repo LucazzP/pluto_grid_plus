@@ -91,6 +91,9 @@ class PlutoGridCellGestureEvent extends PlutoGridEvent {
 
     if (stateManager.mode.isMultiSelectMode) {
       stateManager.handleOnSelected();
+    } else {
+      // useful for mobile devices
+      _onSecondaryTap(stateManager);
     }
   }
 
@@ -195,7 +198,8 @@ enum PlutoGridGestureType {
 
   bool get isOnLongPressStart => this == PlutoGridGestureType.onLongPressStart;
 
-  bool get isOnLongPressMoveUpdate => this == PlutoGridGestureType.onLongPressMoveUpdate;
+  bool get isOnLongPressMoveUpdate =>
+      this == PlutoGridGestureType.onLongPressMoveUpdate;
 
   bool get isOnLongPressEnd => this == PlutoGridGestureType.onLongPressEnd;
 
