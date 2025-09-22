@@ -78,6 +78,7 @@ void main() {
           home: Material(
             child: PlutoDefaultCell(
               cell: cell,
+              columnIdx: 0,
               column: column,
               row: row,
               rowIdx: 0,
@@ -136,6 +137,7 @@ void main() {
             home: Material(
               child: PlutoDefaultCell(
                 cell: cell,
+                columnIdx: 0,
                 column: column,
                 row: row,
                 rowIdx: 0,
@@ -199,6 +201,7 @@ void main() {
             home: Material(
               child: PlutoDefaultCell(
                 cell: cell,
+                columnIdx: 0,
                 column: column,
                 row: row,
                 rowIdx: 0,
@@ -287,6 +290,7 @@ void main() {
             home: Material(
               child: PlutoDefaultCell(
                 cell: cell,
+                columnIdx: 0,
                 column: column,
                 row: row!,
                 rowIdx: 0,

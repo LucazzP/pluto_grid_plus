@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 import 'package:pluto_grid_plus/src/manager/event/pluto_grid_row_hover_event.dart';
@@ -25,9 +26,10 @@ class PlutoBaseRow extends StatelessWidget {
   });
 
   bool _checkSameDragRows(DragTargetDetails<PlutoRow> draggingRow) {
-    final List<PlutoRow> selectedRows = stateManager.currentSelectingRows.isNotEmpty
-        ? stateManager.currentSelectingRows
-        : [draggingRow.data];
+    final List<PlutoRow> selectedRows =
+        stateManager.currentSelectingRows.isNotEmpty
+            ? stateManager.currentSelectingRows
+            : [draggingRow.data];
 
     final end = rowIdx + selectedRows.length;
 
@@ -57,7 +59,7 @@ class PlutoBaseRow extends StatelessWidget {
     );
   }
 
-  PlutoVisibilityLayoutId _makeCell(PlutoColumn column) {
+  PlutoVisibilityLayoutId _makeCell(int columnIdx, PlutoColumn column) {
     return PlutoVisibilityLayoutId(
       id: column.field,
       child: PlutoBaseCell(
@@ -65,18 +67,21 @@ class PlutoBaseRow extends StatelessWidget {
         cell: row.cells[column.field]!,
         column: column,
         rowIdx: rowIdx,
+        columnIdx: columnIdx,
         row: row,
         stateManager: stateManager,
       ),
     );
   }
 
-  Widget _dragTargetBuilder(dragContext, candidate, rejected, {bool isTarget = true}) {
+  Widget _dragTargetBuilder(dragContext, candidate, rejected,
+      {bool isTarget = true}) {
     return _RowContainerWidget(
       stateManager: stateManager,
       rowIdx: rowIdx,
       row: row,
-      enableRowColorAnimation: stateManager.configuration.style.enableRowColorAnimation,
+      enableRowColorAnimation:
+          stateManager.configuration.style.enableRowColorAnimation,
       isTarget: isTarget,
       key: ValueKey('rowContainer_${row.key}'),
       child: visibilityLayout
@@ -89,7 +94,7 @@ class PlutoBaseRow extends StatelessWidget {
               ),
               scrollController: stateManager.scroll.bodyRowsHorizontal!,
               initialViewportDimension: MediaQuery.of(dragContext).size.width,
-              children: columns.map(_makeCell).toList(growable: false),
+              children: columns.mapIndexed(_makeCell).toList(growable: false),
             )
           : CustomMultiChildLayout(
               key: ValueKey('rowContainer_${row.key}_row'),
@@ -98,7 +103,7 @@ class PlutoBaseRow extends StatelessWidget {
                 columns: columns,
                 textDirection: stateManager.textDirection,
               ),
-              children: columns.map(_makeCell).toList(growable: false),
+              children: columns.mapIndexed(_makeCell).toList(growable: false),
             ),
     );
   }
@@ -125,7 +130,8 @@ class PlutoBaseRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isTarget = columns.any((element) => element.enableRowDrag(row, rowIdx));
+    final isTarget =
+        columns.any((element) => element.enableRowDrag(row, rowIdx));
     if (isTarget) {
       return MouseRegion(
         onEnter: (event) => _handleOnEnter(),
@@ -230,7 +236,9 @@ class _RowContainerWidget extends PlutoStatefulWidget {
 }
 
 class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
-    with AutomaticKeepAliveClientMixin, PlutoStateWithKeepAlive<_RowContainerWidget> {
+    with
+        AutomaticKeepAliveClientMixin,
+        PlutoStateWithKeepAlive<_RowContainerWidget> {
   @override
   PlutoGridStateManager get stateManager => widget.stateManager;
 
@@ -240,9 +248,10 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
       ? stateManager.configuration.style.rowColor
       : stateManager.configuration.style.oddRowColor!;
 
-  Color get _evenRowColor => stateManager.configuration.style.evenRowColor == null
-      ? stateManager.configuration.style.rowColor
-      : stateManager.configuration.style.evenRowColor!;
+  Color get _evenRowColor =>
+      stateManager.configuration.style.evenRowColor == null
+          ? stateManager.configuration.style.rowColor
+          : stateManager.configuration.style.evenRowColor!;
 
   Color get _rowColor {
     if (widget.row.frozen != PlutoRowFrozen.none) {
@@ -265,7 +274,8 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
       _getBoxDecoration(),
     );
 
-    setKeepAlive(stateManager.isSelecting && stateManager.currentRowIdx == widget.rowIdx);
+    setKeepAlive(stateManager.isSelecting &&
+        stateManager.currentRowIdx == widget.rowIdx);
   }
 
   Color _getDefaultRowColor() {

@@ -8,6 +8,8 @@ import 'ui.dart';
 class PlutoBaseCell extends StatelessWidget implements PlutoVisibilityLayoutChild {
   final PlutoCell cell;
 
+  final int columnIdx;
+
   final PlutoColumn column;
 
   final int rowIdx;
@@ -20,6 +22,7 @@ class PlutoBaseCell extends StatelessWidget implements PlutoVisibilityLayoutChil
     super.key,
     required this.cell,
     required this.column,
+    required this.columnIdx,
     required this.rowIdx,
     required this.row,
     required this.stateManager,
@@ -132,6 +135,7 @@ class PlutoBaseCell extends StatelessWidget implements PlutoVisibilityLayoutChil
         stateManager: stateManager,
         child: _Cell(
           stateManager: stateManager,
+          columnIdx: columnIdx,
           rowIdx: rowIdx,
           column: column,
           row: row,
@@ -312,6 +316,8 @@ class _CellContainerState extends PlutoStateWithChange<_CellContainer> {
 class _Cell extends PlutoStatefulWidget {
   final PlutoGridStateManager stateManager;
 
+  final int columnIdx;
+
   final int rowIdx;
 
   final PlutoRow row;
@@ -322,6 +328,7 @@ class _Cell extends PlutoStatefulWidget {
 
   const _Cell({
     required this.stateManager,
+    required this.columnIdx,
     required this.rowIdx,
     required this.row,
     required this.column,
@@ -403,6 +410,7 @@ class _CellState extends PlutoStateWithChange<_Cell> {
 
     return PlutoDefaultCell(
       cell: widget.cell,
+      columnIdx: widget.columnIdx,
       column: widget.column,
       rowIdx: widget.rowIdx,
       row: widget.row,

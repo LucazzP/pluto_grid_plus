@@ -52,6 +52,7 @@ void main() {
 
   Widget buildApp({
     required PlutoCell cell,
+    required int columnIdx,
     required PlutoColumn column,
     required PlutoRow row,
     required int rowIdx,
@@ -60,6 +61,7 @@ void main() {
       home: Material(
         child: PlutoBaseCell(
           cell: cell,
+          columnIdx: columnIdx,
           column: column,
           rowIdx: rowIdx,
           row: row,
@@ -88,7 +90,7 @@ void main() {
     );
 
     const rowIdx = 0;
-
+    const columnIdx = 0;
     // when
     when(stateManager.isCurrentCell(any)).thenReturn(false);
     when(stateManager.isSelectedCell(any, any, any)).thenReturn(false);
@@ -97,6 +99,7 @@ void main() {
     await tester.pumpWidget(
       buildApp(
         cell: cell,
+        columnIdx: columnIdx,
         column: column,
         rowIdx: rowIdx,
         row: row,
@@ -131,7 +134,7 @@ void main() {
     );
 
     const rowIdx = 0;
-
+    const columnIdx = 0;
     // when
     when(stateManager.isCurrentCell(any)).thenReturn(true);
     when(stateManager.isEditing).thenReturn(false);
@@ -139,6 +142,7 @@ void main() {
     await tester.pumpWidget(
       buildApp(
         cell: cell,
+        columnIdx: columnIdx,
         column: column,
         rowIdx: rowIdx,
         row: row,
@@ -173,7 +177,7 @@ void main() {
     );
 
     const rowIdx = 0;
-
+    const columnIdx = 0;
     // when
     when(stateManager.isCurrentCell(any)).thenReturn(true);
     when(stateManager.isEditing).thenReturn(true);
@@ -181,6 +185,7 @@ void main() {
     await tester.pumpWidget(
       buildApp(
         cell: cell,
+        columnIdx: columnIdx,
         column: column,
         rowIdx: rowIdx,
         row: row,
@@ -215,7 +220,7 @@ void main() {
     );
 
     const rowIdx = 0;
-
+    const columnIdx = 0;
     // when
     when(stateManager.isCurrentCell(any)).thenReturn(true);
     when(stateManager.isEditing).thenReturn(true);
@@ -223,6 +228,7 @@ void main() {
     await tester.pumpWidget(
       buildApp(
         cell: cell,
+        columnIdx: columnIdx,
         column: column,
         rowIdx: rowIdx,
         row: row,
@@ -257,7 +263,7 @@ void main() {
     );
 
     const rowIdx = 0;
-
+    const columnIdx = 0;
     // when
     when(stateManager.isCurrentCell(any)).thenReturn(true);
     when(stateManager.isEditing).thenReturn(true);
@@ -265,6 +271,7 @@ void main() {
     await tester.pumpWidget(
       buildApp(
         cell: cell,
+        columnIdx: columnIdx,
         column: column,
         rowIdx: rowIdx,
         row: row,
@@ -300,7 +307,7 @@ void main() {
     );
 
     const rowIdx = 0;
-
+    const columnIdx = 0;
     // when
     when(stateManager.isCurrentCell(any)).thenReturn(true);
     when(stateManager.isEditing).thenReturn(true);
@@ -308,6 +315,7 @@ void main() {
     await tester.pumpWidget(
       buildApp(
         cell: cell,
+        columnIdx: columnIdx,
         column: column,
         rowIdx: rowIdx,
         row: row,
@@ -343,7 +351,7 @@ void main() {
     );
 
     const rowIdx = 0;
-
+    const columnIdx = 0;
     // when
     when(stateManager.isCurrentCell(any)).thenReturn(true);
     when(stateManager.isEditing).thenReturn(true);
@@ -351,6 +359,7 @@ void main() {
     await tester.pumpWidget(
       buildApp(
         cell: cell,
+        columnIdx: columnIdx,
         column: column,
         rowIdx: rowIdx,
         row: row,
@@ -385,6 +394,7 @@ void main() {
       );
 
       const rowIdx = 0;
+      const columnIdx = 0;
 
       // when
       when(stateManager.isCurrentCell(any)).thenReturn(false);
@@ -394,6 +404,7 @@ void main() {
       await tester.pumpWidget(
         buildApp(
           cell: cell,
+          columnIdx: columnIdx,
           column: column,
           rowIdx: rowIdx,
           row: row,
@@ -434,7 +445,7 @@ void main() {
       );
 
       const rowIdx = 0;
-
+      const columnIdx = 0;
       // when
       when(stateManager.isCurrentCell(any)).thenReturn(false);
       when(stateManager.isEditing).thenReturn(false);
@@ -443,6 +454,7 @@ void main() {
       await tester.pumpWidget(
         buildApp(
           cell: cell,
+          columnIdx: columnIdx,
           column: column,
           rowIdx: rowIdx,
           row: row,
@@ -483,6 +495,7 @@ void main() {
       );
 
       const rowIdx = 0;
+      const columnIdx = 0;
 
       when(stateManager.isCurrentCell(any)).thenReturn(true);
       when(stateManager.isEditing).thenReturn(false);
@@ -495,6 +508,7 @@ void main() {
       await tester.pumpWidget(
         buildApp(
           cell: cell,
+          columnIdx: columnIdx,
           column: column,
           rowIdx: rowIdx,
           row: row,
@@ -533,6 +547,8 @@ void main() {
 
     int rowIdx;
 
+    int columnIdx;
+
     aCell({
       bool isCurrentCell = true,
       bool isEditing = false,
@@ -562,10 +578,12 @@ void main() {
         );
 
         rowIdx = 0;
+        columnIdx = 0;
 
         await tester.pumpWidget(
           buildApp(
             cell: cell,
+            columnIdx: columnIdx,
             column: column!,
             rowIdx: rowIdx,
             row: row,
@@ -613,6 +631,8 @@ void main() {
 
     int rowIdx;
 
+    int columnIdx;
+
     aCellWithConfiguration(
       PlutoGridConfiguration configuration, {
       bool isCurrentCell = true,
@@ -643,12 +663,13 @@ void main() {
         );
 
         rowIdx = 0;
-
+        columnIdx = 0;
         when(stateManager.configuration).thenReturn(configuration);
 
         await tester.pumpWidget(
           buildApp(
             cell: cell,
+            columnIdx: columnIdx,
             column: column!,
             rowIdx: rowIdx,
             row: row,

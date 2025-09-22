@@ -8,6 +8,8 @@ typedef DragUpdatedCallback = Function(Offset offset);
 class PlutoDefaultCell extends PlutoStatefulWidget {
   final PlutoCell cell;
 
+  final int columnIdx;
+
   final PlutoColumn column;
 
   final int rowIdx;
@@ -18,6 +20,7 @@ class PlutoDefaultCell extends PlutoStatefulWidget {
 
   const PlutoDefaultCell({
     required this.cell,
+    required this.columnIdx,
     required this.column,
     required this.rowIdx,
     required this.row,
@@ -111,7 +114,8 @@ class _PlutoDefaultCellState extends PlutoStateWithChange<PlutoDefaultCell> {
 
     _canRowDrag = update<bool>(
       _canRowDrag,
-      widget.column.enableRowDrag(widget.row, widget.rowIdx) && stateManager.canRowDrag,
+      widget.column.enableRowDrag(widget.row, widget.rowIdx) &&
+          stateManager.canRowDrag,
     );
 
     _isCurrentCell = update<bool>(
@@ -165,6 +169,15 @@ class _PlutoDefaultCellState extends PlutoStateWithChange<PlutoDefaultCell> {
       expandIcon = IconButton(
         padding: const EdgeInsets.only(bottom: 0.0),
         onPressed: _isEmptyGroup ? null : _handleToggleExpandedRowGroup,
+        iconSize: style.iconSize,
+        color: style.iconColor,
+        isSelected: widget.row.type.group.expanded,
+        constraints: BoxConstraints(
+          minWidth: style.iconSize + 12,
+          minHeight: style.iconSize + 12,
+          maxWidth: style.iconSize + 12,
+          maxHeight: style.iconSize + 12,
+        ),
         icon: _isEmptyGroup
             ? Icon(
                 style.rowGroupEmptyIcon,
@@ -185,39 +198,49 @@ class _PlutoDefaultCellState extends PlutoStateWithChange<PlutoDefaultCell> {
       );
     }
 
-    return Row(children: [
-      if (_canRowDrag)
-        _RowDragIconWidget(
-          column: widget.column,
-          row: widget.row,
-          rowIdx: widget.rowIdx,
-          stateManager: stateManager,
-          feedbackWidget: cellWidget,
-          dragIcon: Icon(
-            Icons.drag_indicator,
-            size: style.iconSize,
-            color: style.iconColor,
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (_canRowDrag)
+          _RowDragIconWidget(
+            column: widget.column,
+            row: widget.row,
+            rowIdx: widget.rowIdx,
+            stateManager: stateManager,
+            feedbackWidget: cellWidget,
+            dragIcon: Icon(
+              Icons.drag_indicator,
+              size: style.iconSize,
+              color: style.iconColor,
+            ),
           ),
-        ),
-      if (widget.column.enableRowChecked &&
-          depth >= widget.column.rowCheckBoxGroupDepth)
-        CheckboxSelectionWidget(
-          column: widget.column,
-          row: widget.row,
-          rowIdx: widget.rowIdx,
-          stateManager: stateManager,
-        ),
-      if (spacingWidget != null) spacingWidget,
-      if (expandIcon != null) expandIcon,
-      Expanded(child: cellWidget),
-      if (PlutoDefaultCell.showGroupCount(
-          stateManager.rowGroupDelegate, widget.cell))
-        Text(
-          PlutoDefaultCell.groupCountText(
-              stateManager.rowGroupDelegate!, widget.row),
-          style: PlutoDefaultCell.groupCountTextStyle(stateManager.style),
-        ),
-    ]);
+        if (widget.column.enableRowChecked &&
+            depth >= widget.column.rowCheckBoxGroupDepth)
+          CheckboxSelectionWidget(
+            column: widget.column,
+            row: widget.row,
+            rowIdx: widget.rowIdx,
+            stateManager: stateManager,
+          ),
+        if (spacingWidget != null) spacingWidget,
+        if (expandIcon != null)
+          expandIcon
+        else
+          (stateManager.enabledRowGroups &&
+                  widget.columnIdx == 0 &&
+                  widget.cell.row.depth == 0)
+              ? SizedBox(width: style.iconSize + 12)
+              : const SizedBox.shrink(),
+        Expanded(child: cellWidget),
+        if (PlutoDefaultCell.showGroupCount(
+            stateManager.rowGroupDelegate, widget.cell))
+          Text(
+            PlutoDefaultCell.groupCountText(
+                stateManager.rowGroupDelegate!, widget.row),
+            style: PlutoDefaultCell.groupCountTextStyle(stateManager.style),
+          ),
+      ],
+    );
   }
 }
 
