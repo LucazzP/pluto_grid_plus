@@ -165,7 +165,7 @@ class MainColumnLayoutDelegate extends MultiChildLayoutDelegate {
     return Size(
       columns.fold(
         0,
-        (previousValue, element) => previousValue += element.width,
+        (previousValue, element) => previousValue += element.getEffectiveWidth(stateManager),
       ),
       totalColumnsHeight,
     );
@@ -182,7 +182,7 @@ class MainColumnLayoutDelegate extends MultiChildLayoutDelegate {
       for (PlutoColumnGroupPair pair in items) {
         final double width = pair.columns.fold<double>(
           0,
-          (previousValue, element) => previousValue + element.width,
+          (previousValue, element) => previousValue + element.getEffectiveWidth(stateManager),
         );
 
         if (hasChild(pair.key)) {
@@ -202,7 +202,7 @@ class MainColumnLayoutDelegate extends MultiChildLayoutDelegate {
       double dx = 0;
 
       for (PlutoColumn col in items) {
-        var width = col.width;
+        var width = col.getEffectiveWidth(stateManager);
 
         if (hasChild(col.field)) {
           var boxConstraints = BoxConstraints.tight(

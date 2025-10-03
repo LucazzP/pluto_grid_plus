@@ -89,7 +89,7 @@ mixin PopupCellState<T extends PopupCell> on State<T>
       columns: popupColumns,
       rows: popupRows,
       width: popupColumns.fold<double>(0, (previous, column) {
-            return previous + column.width;
+            return previous + column.getEffectiveWidth(widget.stateManager);
           }) +
           1,
       height: popupHeight,

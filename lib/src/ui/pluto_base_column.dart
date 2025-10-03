@@ -21,7 +21,7 @@ class PlutoBaseColumn extends PlutoStatefulWidget
   PlutoBaseColumnState createState() => PlutoBaseColumnState();
 
   @override
-  double get width => column.width;
+  double get width => column.getEffectiveWidth(stateManager);
 
   @override
   double get startPosition => column.startPosition;

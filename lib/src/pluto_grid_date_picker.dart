@@ -87,7 +87,7 @@ class PlutoGridDatePicker {
       columns: popupColumns,
       rows: popupRows,
       width: popupColumns.fold<double>(0, (previous, column) {
-            return previous + column.width;
+            return previous + column.getEffectiveWidth(datePickerStateManager);
           }) +
           1,
       height: popupHeight,

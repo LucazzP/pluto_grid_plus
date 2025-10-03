@@ -332,7 +332,7 @@ class _RowDragIconWidget extends StatelessWidget {
           translation: Offset(translationX, -0.5),
           child: Material(
             child: PlutoShadowContainer(
-              width: column.width,
+              width: column.getEffectiveWidth(stateManager),
               height: stateManager.rowHeight,
               backgroundColor:
                   stateManager.configuration.style.gridBackgroundColor,

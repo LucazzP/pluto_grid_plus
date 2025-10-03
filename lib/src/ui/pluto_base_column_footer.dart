@@ -15,7 +15,7 @@ class PlutoBaseColumnFooter extends StatelessWidget
   }) : super(key: column.key);
 
   @override
-  double get width => column.width;
+  double get width => column.getEffectiveWidth(stateManager);
 
   @override
   double get startPosition => column.startPosition;

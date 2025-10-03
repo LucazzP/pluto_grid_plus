@@ -29,7 +29,7 @@ class PlutoBaseCell extends StatelessWidget implements PlutoVisibilityLayoutChil
   });
 
   @override
-  double get width => column.width;
+  double get width => column.getEffectiveWidth(stateManager);
 
   @override
   double get startPosition => column.startPosition;

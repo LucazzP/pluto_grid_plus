@@ -172,7 +172,7 @@ class ListResizeDelegate extends SingleChildLayoutDelegate {
   double _getWidth() {
     return columns.fold(
       0,
-      (previousValue, element) => previousValue + element.width,
+      (previousValue, element) => previousValue + element.getEffectiveWidth(stateManager),
     );
   }
 

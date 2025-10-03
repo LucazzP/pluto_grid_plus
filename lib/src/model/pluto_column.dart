@@ -36,6 +36,11 @@ class PlutoColumn {
 
   double width;
 
+  double getEffectiveWidth(PlutoGridStateManager stateManager) {
+    final isSorted = stateManager.getSortedColumn?.field == field;
+    return width + (isSorted ? stateManager.style.iconSize : 0);
+  }
+
   double minWidth;
 
   /// Customisable title padding.
