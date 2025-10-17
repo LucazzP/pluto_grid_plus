@@ -300,7 +300,7 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
     final isBottomDragTarget =
         stateManager.isRowIdxBottomDragTarget(widget.rowIdx);
 
-    Color rowColor = _rowColor;
+    Color? rowColor;
 
     if (isCurrentRow && stateManager.hasFocus) {
       rowColor = stateManager.configuration.style.activatedColor;
@@ -310,6 +310,13 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
         stateManager.configuration.style.enableRowHoverColor) {
       rowColor = stateManager.configuration.style.rowHoveredColor;
     }
+
+    if (stateManager.rowColorCallback != null) {
+      // mix rowColor and rowColorCallback
+      rowColor = Color.lerp(rowColor, _rowColor, 0.5);
+    }
+
+    rowColor ??= _rowColor;
 
     final frozenBorder = widget.row.frozen != PlutoRowFrozen.none
         ? Border(
