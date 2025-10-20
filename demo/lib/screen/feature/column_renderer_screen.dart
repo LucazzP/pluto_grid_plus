@@ -30,7 +30,7 @@ class _ColumnRendererScreenState extends State<ColumnRendererScreen> {
         title: 'column1',
         field: 'column1',
         type: PlutoColumnType.text(),
-        enableRowDrag: true,
+        // enableRowDrag: true,
         enableRowChecked: true,
         width: 250,
         minWidth: 175,

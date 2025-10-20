@@ -227,7 +227,7 @@ class _HeaderState extends State<_Header> {
     var exported = const Utf8Encoder().convert(
         pluto_grid_export.PlutoGridExport.exportCSV(widget.stateManager));
     String savedFile = await FileSaver.instance
-        .saveFile(name: title, bytes: exported, ext: ".csv");
+        .saveFile(name: title, bytes: exported, fileExtension: ".csv");
     if (!mounted) return;
     String msg = 'Exported successfully';
 
