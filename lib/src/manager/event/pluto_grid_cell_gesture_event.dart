@@ -48,7 +48,7 @@ class PlutoGridCellGestureEvent extends PlutoGridEvent {
       _selecting(stateManager);
       return;
     } else if (stateManager.mode.isSelectMode) {
-      _selectMode(stateManager);
+      _selecting(stateManager);
       return;
     }
 
@@ -98,7 +98,7 @@ class PlutoGridCellGestureEvent extends PlutoGridEvent {
   }
 
   void _onDoubleTap(PlutoGridStateManager stateManager) {
-    stateManager.onRowDoubleTap!(
+    stateManager.onRowDoubleTap?.call(
       PlutoGridOnRowDoubleTapEvent(
         row: stateManager.getRowByIdx(rowIdx)!,
         rowIdx: rowIdx,
@@ -108,7 +108,17 @@ class PlutoGridCellGestureEvent extends PlutoGridEvent {
   }
 
   void _onSecondaryTap(PlutoGridStateManager stateManager) {
-    stateManager.onRowSecondaryTap!(
+    final selectedRows = stateManager.currentSelectingRows;
+
+    // ensure the cell is in the selected rows, else set the current cell to that
+    stateManager.setCurrentCell(
+      cell,
+      rowIdx,
+      clearCurrentSelecting:
+          !selectedRows.any((row) => row.key == cell.row.key),
+    );
+
+    stateManager.onRowSecondaryTap?.call(
       PlutoGridOnRowSecondaryTapEvent(
         row: stateManager.getRowByIdx(rowIdx)!,
         rowIdx: rowIdx,
@@ -143,6 +153,13 @@ class PlutoGridCellGestureEvent extends PlutoGridEvent {
     } else if (stateManager.keyPressed.ctrl) {
       stateManager.toggleSelectingRow(rowIdx);
     } else {
+      final currentSelectingRows = stateManager.currentSelectingRows;
+      final isInCurrentSelectingRows = currentSelectingRows.any((row) => row.key == cell.row.key);
+      stateManager.setCurrentCell(
+        cell,
+        rowIdx,
+        clearCurrentSelecting: !isInCurrentSelectingRows,
+      );
       callOnSelected = false;
     }
 

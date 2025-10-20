@@ -129,7 +129,8 @@ class PlutoBodyRowsState extends PlutoStateWithChange<PlutoBodyRows> {
                   itemExtent: stateManager.rowWrapper != null
                       ? null
                       : stateManager.rowTotalHeight,
-                  addRepaintBoundaries: false,
+                  // Keep repaint boundaries to allow subtree caching and reduce layer invalidations
+                  addRepaintBoundaries: true,
                   itemBuilder: (ctx, i) => _buildRow(
                       context, _scrollableRows[i], i + _frozenTopRows.length),
                 ),
@@ -166,13 +167,18 @@ class ListResizeDelegate extends SingleChildLayoutDelegate {
 
   @override
   bool shouldRelayout(covariant SingleChildLayoutDelegate oldDelegate) {
-    return true;
+    if (oldDelegate is! ListResizeDelegate) return true;
+    // Relayout if columns list identity changed or resizing notifier instance changes
+    return !identical(columns, oldDelegate.columns) ||
+        !identical(stateManager.resizingChangeNotifier,
+            oldDelegate.stateManager.resizingChangeNotifier);
   }
 
   double _getWidth() {
     return columns.fold(
       0,
-      (previousValue, element) => previousValue + element.getEffectiveWidth(stateManager),
+      (previousValue, element) =>
+          previousValue + element.getEffectiveWidth(stateManager),
     );
   }
 

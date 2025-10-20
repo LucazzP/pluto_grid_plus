@@ -119,13 +119,20 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   int get _maxLength => hasFilter ? _filteredList.length : _list.length;
 
-  List<E> get _effectiveList => hasFilter
-      ? hasRange
-          ? _filteredList.getRange(_safetyFrom, _safetyTo).toList()
-          : _filteredList
-      : hasRange
-          ? _list.getRange(_safetyFrom, _safetyTo).toList()
-          : _list;
+  // Removed to avoid allocations; keep placeholder to avoid unused getter lint.
+  // ignore: unused_element
+  List<E> get _effectiveList => _effectiveIterable.toList();
+
+  // Optimized helpers to avoid allocating intermediate lists for range access
+  int get _effectiveLength => hasFilter
+      ? (hasRange ? (_safetyTo - _safetyFrom) : _filteredList.length)
+      : (hasRange ? (_safetyTo - _safetyFrom) : _list.length);
+
+  Iterable<E> get _effectiveIterable => hasFilter
+      ? (hasRange
+          ? _filteredList.getRange(_safetyFrom, _safetyTo)
+          : _filteredList)
+      : (hasRange ? _list.getRange(_safetyFrom, _safetyTo) : _list);
 
   List<E> _filteredList = [];
 
@@ -147,7 +154,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   /// Returns the length of the elements with filtering or ranging applied.
   @override
-  int get length => _effectiveList.length;
+  int get length => _effectiveLength;
 
   /// Returns the length of all elements, regardless of filtering or ranging.
   int get originalLength => _list.length;
@@ -199,7 +206,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   @override
   bool remove(Object? element) {
-    if (_isNotInList(element, _effectiveList)) {
+    if (_isNotInList(element, _effectiveIterable)) {
       return false;
     }
 
@@ -229,7 +236,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   @override
   void removeWhere(bool Function(E element) test) {
-    var list = _effectiveList;
+    final Iterable<E> list = _effectiveIterable;
 
     _workOnOriginalList(() {
       super.removeWhere((E element) {
@@ -251,7 +258,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   @override
   void retainWhere(bool Function(E element) test) {
-    var list = _effectiveList;
+    final Iterable<E> list = _effectiveIterable;
 
     _workOnOriginalList(() {
       super.retainWhere((E element) {
@@ -274,7 +281,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   @override
   void clear() {
-    var list = _effectiveList;
+    final Iterable<E> list = _effectiveIterable;
 
     _workOnOriginalList(() {
       super.removeWhere((E element) {
@@ -294,7 +301,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   @override
   E removeLast() {
-    var result = removeAt(_effectiveList.length - 1);
+    var result = removeAt(_effectiveLength - 1);
 
     _updateFilteredList();
 
@@ -380,7 +387,16 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
 
   @override
   E operator [](int index) {
-    return _effectiveList[index];
+    if (hasFilter) {
+      if (hasRange) {
+        return _filteredList[_safetyFrom + index];
+      }
+      return _filteredList[index];
+    }
+    if (hasRange) {
+      return _list[_safetyFrom + index];
+    }
+    return _list[index];
   }
 
   @override
@@ -431,23 +447,25 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
     setFilterRange(storeRange);
   }
 
-  bool _isInList(Object? element, List<E> list) {
+  bool _isInList(Object? element, Iterable<E> list) {
     return list.firstWhereOrNull(
           (e) => e == element,
         ) !=
         null;
   }
 
-  bool _isNotInList(Object? element, List<E> list) {
+  bool _isNotInList(Object? element, Iterable<E> list) {
     return !_isInList(element, list);
   }
 
   int _toOriginalIndex(int index) {
-    if (_effectiveList.isEmpty || (!hasFilter && !hasRange)) {
+    if (_effectiveLength == 0 || (!hasFilter && !hasRange)) {
       return index;
     }
 
-    final originalValue = _effectiveList[index];
+    final E originalValue = hasFilter
+        ? (hasRange ? _filteredList[_safetyFrom + index] : _filteredList[index])
+        : (hasRange ? _list[_safetyFrom + index] : _list[index]);
 
     final valueIndexes = _list
         .asMap()
@@ -470,7 +488,7 @@ class FilteredList<E> extends ListBase<E> implements AbstractFilteredList<E> {
   }
 
   int _toOriginalIndexForInsert(int index) {
-    var lastIndex = _effectiveList.length - 1;
+    var lastIndex = _effectiveLength - 1;
 
     var greaterThanLast = index > lastIndex;
 

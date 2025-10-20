@@ -204,7 +204,9 @@ class _RowCellsLayoutDelegate extends MultiChildLayoutDelegate {
 
   @override
   bool shouldRelayout(covariant MultiChildLayoutDelegate oldDelegate) {
-    return true;
+    if (oldDelegate is! _RowCellsLayoutDelegate) return true;
+    return !identical(columns, oldDelegate.columns) ||
+        textDirection != oldDelegate.textDirection;
   }
 }
 
@@ -295,6 +297,7 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
   BoxDecoration _getBoxDecoration() {
     final isCurrentRow = stateManager.currentRowIdx == widget.rowIdx;
     final isCheckedRow = widget.row.checked == true;
+    final isSelectedRow = stateManager.isSelectedRow(widget.row.key);
     final isHoveredRow = stateManager.isRowIdxHovered(widget.rowIdx);
     final isTopDragTarget = stateManager.isRowIdxTopDragTarget(widget.rowIdx);
     final isBottomDragTarget =
@@ -303,6 +306,8 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
     Color? rowColor;
 
     if (isCurrentRow && stateManager.hasFocus) {
+      rowColor = stateManager.configuration.style.activatedColor;
+    } else if (isSelectedRow) {
       rowColor = stateManager.configuration.style.activatedColor;
     } else if (isCheckedRow) {
       rowColor = stateManager.configuration.style.rowCheckedColor;

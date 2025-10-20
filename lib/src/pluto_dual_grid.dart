@@ -427,7 +427,10 @@ class PlutoDualGridLayoutDelegate extends MultiChildLayoutDelegate {
 
   @override
   bool shouldRelayout(covariant MultiChildLayoutDelegate oldDelegate) {
-    return true;
+    if (oldDelegate is! PlutoDualGridLayoutDelegate) return true;
+    return display.offset != oldDelegate.display.offset ||
+        isLTR != oldDelegate.isLTR ||
+        showDraggableDivider != oldDelegate.showDraggableDivider;
   }
 }
 

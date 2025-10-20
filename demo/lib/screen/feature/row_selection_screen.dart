@@ -103,6 +103,9 @@ class _RowSelectionScreenState extends State<RowSelectionScreen> {
             child: PlutoGrid(
               columns: columns,
               rows: rows,
+              onSelected: (PlutoGridOnSelectedEvent event) {
+                print(event);
+              },
               onChanged: (PlutoGridOnChangedEvent event) {
                 print(event);
               },

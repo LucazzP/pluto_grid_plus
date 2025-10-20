@@ -350,9 +350,9 @@ mixin SelectingState implements IPlutoGridState {
       return;
     }
 
-    final maxFrom = min(from!, to!);
+    final maxFrom = min(from ?? 0, to ?? 0);
 
-    final maxTo = max(from, to) + 1;
+    final maxTo = max(from ?? 0, to ?? 0) + 1;
 
     if (maxFrom < 0 || maxTo > refRows.length) {
       return;

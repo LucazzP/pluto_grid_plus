@@ -109,7 +109,8 @@ class ColumnFooterLayoutDelegate extends MultiChildLayoutDelegate {
     return Size(
       columns.fold(
         0,
-        (previousValue, element) => previousValue += element.getEffectiveWidth(stateManager),
+        (previousValue, element) =>
+            previousValue += element.getEffectiveWidth(stateManager),
       ),
       stateManager.columnFooterHeight,
     );
@@ -139,6 +140,8 @@ class ColumnFooterLayoutDelegate extends MultiChildLayoutDelegate {
 
   @override
   bool shouldRelayout(covariant MultiChildLayoutDelegate oldDelegate) {
-    return true;
+    if (oldDelegate is! ColumnFooterLayoutDelegate) return true;
+    return !identical(columns, oldDelegate.columns) ||
+        textDirection != oldDelegate.textDirection;
   }
 }

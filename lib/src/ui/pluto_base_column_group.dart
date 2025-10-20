@@ -288,7 +288,10 @@ class ColumnGroupLayout extends MultiChildLayoutDelegate {
 
   @override
   bool shouldRelayout(covariant MultiChildLayoutDelegate oldDelegate) {
-    return true;
+    if (oldDelegate is! ColumnGroupLayout) return true;
+    return !identical(separateLinkedGroups, oldDelegate.separateLinkedGroups) ||
+        textDirection != oldDelegate.textDirection ||
+        depth != oldDelegate.depth;
   }
 }
 
@@ -346,6 +349,8 @@ class ColumnsLayout extends MultiChildLayoutDelegate {
 
   @override
   bool shouldRelayout(covariant MultiChildLayoutDelegate oldDelegate) {
-    return true;
+    if (oldDelegate is! ColumnsLayout) return true;
+    return !identical(columns, oldDelegate.columns) ||
+        textDirection != oldDelegate.textDirection;
   }
 }

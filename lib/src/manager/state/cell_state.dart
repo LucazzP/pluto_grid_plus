@@ -188,6 +188,7 @@ mixin CellState implements IPlutoGridState {
     PlutoCell? cell,
     int? rowIdx, {
     bool notify = true,
+    bool clearCurrentSelecting = true,
   }) {
     if (cell == null ||
         rowIdx == null ||
@@ -208,7 +209,9 @@ mixin CellState implements IPlutoGridState {
       columnIdx: columnIdxByCellKeyAndRowIdx(cell.key, rowIdx),
     );
 
-    clearCurrentSelecting(notify: false);
+    if (clearCurrentSelecting) {
+      this.clearCurrentSelecting(notify: false);
+    }
 
     setEditing(autoEditing, notify: false);
 

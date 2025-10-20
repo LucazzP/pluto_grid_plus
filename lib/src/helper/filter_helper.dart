@@ -328,6 +328,34 @@ class FilterHelper {
     String value, {
     bool caseSensitive = false,
   }) {
+    // Fast paths for common simple contains/startsWith/endsWith cases
+    // when pattern is a plain string without regex meta (we pass escaped patterns above).
+    if (!caseSensitive) {
+      pattern = pattern.toLowerCase();
+      value = value.toLowerCase();
+    }
+
+    // Detect anchors to convert to startsWith/endsWith
+    final bool startsAnchored = pattern.startsWith('^');
+
+    // Remove anchors for direct checks when applicable
+    if (startsAnchored && pattern.length > 1) {
+      final core = pattern.substring(1);
+      // If also endsAnchored (exact match), fall through to regex for safety.
+      if (!core.endsWith('\u0000')) {
+        return value.startsWith(core);
+      }
+    }
+
+    // Fallback simple contains when pattern is escaped text without anchors
+    // We consider that callers pass simple escaped text like RegExp.escape(search)
+    // Optionally wrapped by anchors handled above.
+    // If pattern includes typical regex syntax, use RegExp.
+    final hasRegexMeta = pattern.contains(RegExp(r'[.*+?^${}()|\[\]\\]'));
+    if (!hasRegexMeta) {
+      return value.contains(pattern);
+    }
+
     return RegExp(
       pattern,
       caseSensitive: caseSensitive,

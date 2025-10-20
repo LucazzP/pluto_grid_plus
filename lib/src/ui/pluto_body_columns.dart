@@ -165,7 +165,8 @@ class MainColumnLayoutDelegate extends MultiChildLayoutDelegate {
     return Size(
       columns.fold(
         0,
-        (previousValue, element) => previousValue += element.getEffectiveWidth(stateManager),
+        (previousValue, element) =>
+            previousValue += element.getEffectiveWidth(stateManager),
       ),
       totalColumnsHeight,
     );
@@ -182,7 +183,8 @@ class MainColumnLayoutDelegate extends MultiChildLayoutDelegate {
       for (PlutoColumnGroupPair pair in items) {
         final double width = pair.columns.fold<double>(
           0,
-          (previousValue, element) => previousValue + element.getEffectiveWidth(stateManager),
+          (previousValue, element) =>
+              previousValue + element.getEffectiveWidth(stateManager),
         );
 
         if (hasChild(pair.key)) {
@@ -221,6 +223,11 @@ class MainColumnLayoutDelegate extends MultiChildLayoutDelegate {
 
   @override
   bool shouldRelayout(covariant MultiChildLayoutDelegate oldDelegate) {
-    return true;
+    if (oldDelegate is! MainColumnLayoutDelegate) return true;
+    return !identical(columns, oldDelegate.columns) ||
+        !identical(columnGroups, oldDelegate.columnGroups) ||
+        textDirection != oldDelegate.textDirection ||
+        stateManager.showColumnGroups !=
+            oldDelegate.stateManager.showColumnGroups;
   }
 }
