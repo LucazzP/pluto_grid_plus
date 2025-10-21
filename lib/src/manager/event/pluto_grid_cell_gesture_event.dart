@@ -44,11 +44,11 @@ class PlutoGridCellGestureEvent extends PlutoGridEvent {
   void _onTapUp(PlutoGridStateManager stateManager) {
     if (_setKeepFocusAndCurrentCell(stateManager)) {
       return;
-    } else if (stateManager.isSelectingInteraction()) {
+    } else if (stateManager.isSelectingInteraction() || stateManager.mode.isMultiSelectMode) {
       _selecting(stateManager);
       return;
-    } else if (stateManager.mode.isSelectMode) {
-      _selecting(stateManager);
+    } else if (stateManager.mode.isSelectWithOneTap) {
+      _selectMode(stateManager);
       return;
     }
 
