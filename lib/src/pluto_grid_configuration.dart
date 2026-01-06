@@ -574,6 +574,7 @@ class PlutoGridStyleConfig {
     Color? activatedColor,
     Color? columnCheckedColor,
     Color? cellCheckedColor,
+    Color? rowCheckedColor,
     Color? cellColorInEditState,
     Color? cellColorInReadOnlyState,
     PlutoOptional<Color?>? cellColorGroupedRow,
@@ -626,6 +627,7 @@ class PlutoGridStyleConfig {
         activatedColor: activatedColor ?? this.activatedColor,
         columnCheckedColor: columnCheckedColor ?? this.columnCheckedColor,
         cellCheckedColor: cellCheckedColor ?? this.cellCheckedColor,
+        rowCheckedColor: rowCheckedColor ?? this.rowCheckedColor,
         cellColorInEditState: cellColorInEditState ?? this.cellColorInEditState,
         cellColorInReadOnlyState: cellColorInReadOnlyState ?? this.cellColorInReadOnlyState,
         cellColorGroupedRow:
@@ -689,6 +691,7 @@ class PlutoGridStyleConfig {
             activatedColor == other.activatedColor &&
             columnCheckedColor == other.columnCheckedColor &&
             cellCheckedColor == other.cellCheckedColor &&
+            rowCheckedColor == other.rowCheckedColor &&
             cellColorInEditState == other.cellColorInEditState &&
             cellColorInReadOnlyState == other.cellColorInReadOnlyState &&
             cellColorGroupedRow == other.cellColorGroupedRow &&
@@ -742,6 +745,7 @@ class PlutoGridStyleConfig {
         activatedColor,
         columnCheckedColor,
         cellCheckedColor,
+        rowCheckedColor,
         cellColorInEditState,
         cellColorInReadOnlyState,
         cellColorGroupedRow,

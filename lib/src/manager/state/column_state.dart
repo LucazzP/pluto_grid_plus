@@ -747,7 +747,7 @@ mixin ColumnState implements IPlutoGridState {
   @override
   void showSetColumnsPopup(BuildContext context) {
     const titleField = 'title';
-    const columnField = 'field';
+    const columnKeyField = 'column_key';
 
     final columns = [
       PlutoColumn(
@@ -762,30 +762,56 @@ mixin ColumnState implements IPlutoGridState {
           backgroundColor: configuration.style.filterHeaderColor),
       PlutoColumn(
         title: 'hidden column',
-        field: columnField,
+        field: columnKeyField,
         type: PlutoColumnType.text(),
         hide: true,
       ),
     ];
 
-    final toRow = _toRowByColumnField(
+    final toRow = _toRowByColumnKey(
       titleField: titleField,
-      columnField: columnField,
+      columnKeyField: columnKeyField,
     );
 
-    final rows = refColumns.originalList
+    final originalColumns = refColumns.originalList;
+
+    final rows = originalColumns
         .where((c) => c.enableSetColumnsMenuItem && c.title.trim().isNotEmpty)
         .map(toRow)
         .toList(growable: false);
 
     void handleOnRowChecked(PlutoGridOnRowCheckedEvent event) {
       if (event.isAll) {
-        hideColumns(refColumns.originalList, event.isChecked != true);
+        hideColumns(originalColumns, event.isChecked != true);
       } else {
-        final checkedField = event.row!.cells[columnField]!.value.toString();
-        final checkedColumn = refColumns.originalList.firstWhere(
-          (column) => column.field == checkedField,
-        );
+        final checkedKey = event.row!.cells[columnKeyField]!.value;
+        PlutoColumn? checkedColumn;
+
+        if (checkedKey is Key) {
+          for (final column in originalColumns) {
+            if (column.key == checkedKey) {
+              checkedColumn = column;
+              break;
+            }
+          }
+        }
+
+        if (checkedColumn == null) {
+          final checkedField = checkedKey?.toString();
+          if (checkedField != null) {
+            for (final column in originalColumns) {
+              if (column.field == checkedField) {
+                checkedColumn = column;
+                break;
+              }
+            }
+          }
+        }
+
+        if (checkedColumn == null) {
+          return;
+        }
+
         hideColumn(checkedColumn, event.isChecked != true);
       }
     }
@@ -796,6 +822,7 @@ mixin ColumnState implements IPlutoGridState {
         style: configuration.style.copyWith(
           gridBorderRadius: configuration.style.gridPopupBorderRadius,
           enableRowColorAnimation: false,
+          rowCheckedColor: configuration.style.rowColor,
           oddRowColor: const PlutoOptional(null),
           evenRowColor: const PlutoOptional(null),
         ),
@@ -914,15 +941,15 @@ mixin ColumnState implements IPlutoGridState {
     return found.values.toList();
   }
 
-  PlutoRow Function(PlutoColumn column) _toRowByColumnField({
+  PlutoRow Function(PlutoColumn column) _toRowByColumnKey({
     required String titleField,
-    required String columnField,
+    required String columnKeyField,
   }) {
     return (PlutoColumn column) {
       return PlutoRow(
         cells: {
           titleField: PlutoCell(value: column.titleWithGroup),
-          columnField: PlutoCell(value: column.field),
+          columnKeyField: PlutoCell(value: column.key),
         },
         checked: !column.hide,
       );
