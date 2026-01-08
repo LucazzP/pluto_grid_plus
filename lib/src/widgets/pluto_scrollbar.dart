@@ -101,7 +101,7 @@ class PlutoScrollbar extends StatefulWidget {
 
   static const double defaultScrollbarHoverWidth = 16.0;
 
-  static const Radius defaultRadius = Radius.circular(1.5);
+  static const Radius defaultRadius = Radius.circular(8.0);
 
   static const Radius defaultRadiusWhileDragging = Radius.circular(4.0);
 

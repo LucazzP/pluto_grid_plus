@@ -86,7 +86,8 @@ class _DevelopmentScreenState extends State<DevelopmentScreen> {
     enterKeyAction: PlutoGridEnterKeyAction.toggleEditing,
     enableMoveDownAfterSelecting: false,
     scrollbar: const PlutoGridScrollbarConfig(
-      isAlwaysShown: false,
+      isAlwaysShown: true,
+      draggableScrollbar: true,
       scrollbarThickness: 8,
       scrollbarThicknessWhileDragging: 10,
       // mainAxisMargin: 0,

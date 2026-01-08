@@ -101,55 +101,72 @@ class PlutoBodyRowsState extends PlutoStateWithChange<PlutoBodyRows> {
         color: stateManager.style.rowColor,
         borderRadius: stateManager.configuration.style.gridBorderRadius,
       ),
-      child: SingleChildScrollView(
+      child: Scrollbar(
         controller: _horizontalScroll,
-        scrollDirection: Axis.horizontal,
-        physics: const ClampingScrollPhysics(),
-        child: CustomSingleChildLayout(
-          delegate: ListResizeDelegate(stateManager, _columns),
-          child: Column(
-            children: [
-              // Frozen top rows
-              if (_frozenTopRows.isNotEmpty)
-                Column(
-                  children: _frozenTopRows
-                      .asMap()
-                      .entries
-                      .map((e) => _buildRow(context, e.value, e.key))
-                      .toList(),
-                ),
-              // Scrollable rows
-              Expanded(
-                child: ListView.builder(
-                  key: stateManager.bodyRowsListViewKey,
-                  controller: _verticalScroll,
-                  scrollDirection: Axis.vertical,
-                  physics: const ClampingScrollPhysics(),
-                  itemCount: _scrollableRows.length,
-                  itemExtent: stateManager.rowWrapper != null
-                      ? null
-                      : stateManager.rowTotalHeight,
-                  // Keep repaint boundaries to allow subtree caching and reduce layer invalidations
-                  addRepaintBoundaries: true,
-                  itemBuilder: (ctx, i) => _buildRow(
-                      context, _scrollableRows[i], i + _frozenTopRows.length),
-                ),
+        thumbVisibility: stateManager.configuration.scrollbar.isAlwaysShown,
+        trackVisibility: stateManager.configuration.scrollbar.isAlwaysShown,
+        thickness: stateManager.configuration.scrollbar.scrollbarThickness,
+        radius: stateManager.configuration.scrollbar.scrollbarRadius,
+        child: SingleChildScrollView(
+          controller: _horizontalScroll,
+          scrollDirection: Axis.horizontal,
+          physics: const ClampingScrollPhysics(),
+          child: CustomSingleChildLayout(
+            delegate: ListResizeDelegate(stateManager, _columns),
+            child: Scrollbar(
+              controller: _verticalScroll,
+              thumbVisibility:
+                  stateManager.configuration.scrollbar.isAlwaysShown,
+              trackVisibility:
+                  stateManager.configuration.scrollbar.isAlwaysShown,
+              thickness:
+                  stateManager.configuration.scrollbar.scrollbarThickness,
+              radius: stateManager.configuration.scrollbar.scrollbarRadius,
+              child: Column(
+                children: [
+                  // Frozen top rows
+                  if (_frozenTopRows.isNotEmpty)
+                    Column(
+                      children: _frozenTopRows
+                          .asMap()
+                          .entries
+                          .map((e) => _buildRow(context, e.value, e.key))
+                          .toList(),
+                    ),
+                  // Scrollable rows
+                  Expanded(
+                    child: ListView.builder(
+                      key: stateManager.bodyRowsListViewKey,
+                      controller: _verticalScroll,
+                      scrollDirection: Axis.vertical,
+                      physics: const ClampingScrollPhysics(),
+                      itemCount: _scrollableRows.length,
+                      itemExtent: stateManager.rowWrapper != null
+                          ? null
+                          : stateManager.rowTotalHeight,
+                      // Keep repaint boundaries to allow subtree caching and reduce layer invalidations
+                      addRepaintBoundaries: true,
+                      itemBuilder: (ctx, i) => _buildRow(context,
+                          _scrollableRows[i], i + _frozenTopRows.length),
+                    ),
+                  ),
+                  // Frozen bottom rows
+                  if (_frozenBottomRows.isNotEmpty)
+                    Column(
+                      children: _frozenBottomRows
+                          .asMap()
+                          .entries
+                          .map((e) => _buildRow(
+                              context,
+                              e.value,
+                              e.key +
+                                  _frozenTopRows.length +
+                                  _scrollableRows.length))
+                          .toList(),
+                    ),
+                ],
               ),
-              // Frozen bottom rows
-              if (_frozenBottomRows.isNotEmpty)
-                Column(
-                  children: _frozenBottomRows
-                      .asMap()
-                      .entries
-                      .map((e) => _buildRow(
-                          context,
-                          e.value,
-                          e.key +
-                              _frozenTopRows.length +
-                              _scrollableRows.length))
-                      .toList(),
-                ),
-            ],
+            ),
           ),
         ),
       ),
